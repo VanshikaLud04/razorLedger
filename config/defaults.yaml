@@ -1,0 +1,93 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# RazorLedger — Default Configuration
+# All thresholds, budgets, and model names live here.
+# Never hard-code these values in business logic.
+# Tune only on DEV/VALIDATION data. Never touch for holdout evaluation.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── Matching thresholds ────────────────────────────────────────────────────────
+matching:
+  auto_match_threshold: 0.80       # minimum probabilistic_confidence to auto-match
+  review_threshold: 0.40           # below this → NO_MATCH (above → REVIEW)
+  minimum_confidence_gap: 0.15     # confidence gap to next-best candidate required
+  amount_tolerance_minor: 50       # minor units (e.g. 50 paise) for near-exact amount
+  date_tolerance_days: 3           # days within which dates are "close"
+  settlement_window_days: 5        # within window → PENDING, not NO_MATCH
+
+# ── Evidence families ─────────────────────────────────────────────────────────
+# Auto-match requires evidence from at least `min_families_for_auto_match` distinct families.
+# Families: NUMERIC / TEMPORAL / IDENTITY / SEMANTIC / SOURCE
+evidence:
+  min_families_for_auto_match: 2
+
+  # Bin boundaries for scoring
+  amount_bins:
+    exact: 0                       # difference = 0
+    near: 50                       # ≤ 50 minor units
+    close: 500
+    # else: far
+
+  date_bins:
+    same_day: 0
+    near: 1
+    close: 3
+    # else: far
+
+  reference_bins:
+    exact: 1.0
+    high: 0.85
+    medium: 0.60
+    # else: low
+
+  counterparty_bins:
+    high: 0.85
+    medium: 0.60
+    # else: low
+
+  description_bins:
+    high: 0.80
+    medium: 0.55
+    # else: low
+
+  # Rarity: frequencies fitted on DEV partition only; frozen before validation.
+  # Stored as a serialized JSON file at runtime — see evaluation/benchmark.py
+  rarity_frequency_file: "data/rarity_frequencies.json"
+
+# ── LLM evidence ──────────────────────────────────────────────────────────────
+llm:
+  model: "gemini-3.7-flash"
+  thinking_level: "low"            # LOW = minimal reasoning; we want evidence, not judgment
+  max_calls_per_run: 3
+  max_groups_per_call: 8
+  run_budget_usd: 1.00
+  timeout_seconds: 10
+  # Bounded additive contribution — cannot independently cross auto_match_threshold.
+  # Must be tuned on DEV/VALIDATION only. 0.05 is initial; treat as config, not truth.
+  llm_max_evidence_delta: 0.05
+
+# ── Embedding model ────────────────────────────────────────────────────────────
+embedding:
+  model: "BAAI/bge-small-en-v1.5"  # local, reproducible, no API key
+  cache_by: "normalized_description" # cache key — see matching/evidence.py
+
+# ── Dataset ───────────────────────────────────────────────────────────────────
+dataset:
+  records_per_partition: 150
+  partitions:
+    - DEV
+    - VALIDATION
+    - ADVERSARIAL_HOLDOUT
+    - FROZEN_UNSEEN
+  # Seeds per partition (freeze before any evaluation run)
+  seeds:
+    DEV: "razorledger-dev-v1"
+    VALIDATION: "razorledger-val-v1"
+    ADVERSARIAL_HOLDOUT: "razorledger-adv-v1"
+    FROZEN_UNSEEN: "razorledger-unseen-v1"
+
+# ── Allocation ────────────────────────────────────────────────────────────────
+allocation:
+  # 1:N bounded subset-sum: max candidates considered per group
+  max_n_candidates: 5
+  # Fee/adjustment tolerance for net settlement check (minor units)
+  fee_adjustment_tolerance_minor: 100

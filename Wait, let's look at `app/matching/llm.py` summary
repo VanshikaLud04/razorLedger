@@ -1,0 +1,2 @@
+class GroqProvider(BaseLLMProvider):
+│    MODEL          = "qwen/qwen3.6-27b"

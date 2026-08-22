@@ -13,5 +13,5 @@ async def ingest_route(request: IngestRequest, db=Depends(get_db)):
     service = IngestService(db, str(request.run_id))
     # converting records to dict
     records = [r.dict() for r in request.records]
-    res = await service.ingest(records)
+    res = service.ingest(records)
     return IngestResponse(**res)

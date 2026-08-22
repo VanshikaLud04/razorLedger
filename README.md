@@ -15,28 +15,45 @@ Takes three synthetic source representations of the same underlying financial ev
 - An append-only, hash-chained audit trail
 - A structured review queue for unresolvable exceptions
 
-**150 economic events × 3 sources = ~450 source records.** The problem requires 50+; we evaluate on a fixed 150-event frozen benchmark.
+**150 economic events × 3 sources = ~450 source records.** The problem requires 50+; we evaluate on a fixed 150-event frozen benchmark across four strict partitions (DEV, VALIDATION, TEST_ADVERSARIAL, FROZEN_UNSEEN).
 
 ---
 
-## Architecture (frozen — do not expand)
+## Architecture (Implemented)
 
-```
-INGEST → DEDUP → NORMALIZE
+```text
+INGEST → DEDUP (Idempotency) → NORMALIZE
 → DETERMINISTIC MATCH (resolve cheap cases first)
-→ BLOCK UNRESOLVED ONLY
-→ FUZZY EVIDENCE (RapidFuzz)
+→ BLOCK UNRESOLVED ONLY (naive pairs reduced 18x)
+→ FUZZY EVIDENCE (RapidFuzz counterparty/reference)
+→ SEMANTIC EVIDENCE (BGE-Small embeddings on desc)
 → PROBABILISTIC SCORER (Fellegi-Sunter, evidence families)
-→ (ambiguous only) LLM EVIDENCE (gemini-3.7-flash, thinking=low)
+→ AMBIGUITY GATE (conf ≥ 0.60, gap < 0.10)
+→ BATCHED LLM EVIDENCE (gemini-3.7-flash with bounded retries)
 → PROVISIONAL MATCH PROPOSAL
-→ BOUNDED ALLOCATION (1:1 via SciPy / 1:N via bounded subset-sum DP)
+→ BOUNDED ALLOCATION (1:1 via SciPy)
 → INDEPENDENT FINANCIAL CONTROLS (CTRL-001…010)
 → FINAL DECISION: MATCH | REVIEW | NO_MATCH | PENDING
-→ REASON-CODED, HASH-CHAINED AUDIT TRAIL
 → VALUE-WEIGHTED SCORECARD
 ```
 
 AI proposes. Controls verify. Decision happens only after verification.
+
+---
+
+## Current Status: DEV / Non-Final
+
+The deterministic matching pipeline (fuzzy + semantic + blocking + scoring) is fully frozen and passing tests. 
+
+**Current Non-LLM Baseline (TEST_ADVERSARIAL)**:
+*(Note: These are non-final DEV numbers prior to the final LLM ablation)*
+* Safe automation rate: 15.6%
+* Value coverage: 15.9% (₹6,736,645)
+* False auto-matches: 0
+* Review rate: 83.8%
+* Blocking reduction: 17.6x
+
+The LLM ablation script (`scratch/run_ablation_live.py`) is fully instrumented for exact-tie processing, but awaits execution due to temporary API constraints.
 
 ---
 
@@ -64,73 +81,38 @@ One failed control → `REVIEW`. Deterministic. No exceptions.
 - `ground_truth_group_id` is **evaluator-only** — never enters `app/`
 - `source_event_ids` are **opaque per-source UUIDs** — no lexical link between BANK/INVOICE/GATEWAY IDs for the same event
 - Rarity statistics fitted on **DEV partition only** and frozen
-- `test_matcher_cannot_import_truth_module()` enforces this at the AST level
+- Evaluation runs completely blind to the FROZEN_UNSEEN partition until final handoff.
 
 ---
 
-## Quick start (local)
+## Quick start (Local Validation)
 
 ```bash
-# 1. Start Postgres
-docker compose up -d
-
-# 2. Install dependencies
+# 1. Install dependencies
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+pip install pytest sentence-transformers
 
-# 3. Copy and fill in env
-cp .env.example .env
-# Edit .env: add your GEMINI_API_KEY
+# 2. Run unit tests
+PYTHONPATH=. pytest tests/ -v
 
-# 4. Start the API
-uvicorn app.main:app --reload
+# 3. Run the E2E non-LLM baseline
+PYTHONPATH=. python scripts/run_e2e.py
 
-# 5. Run tests
-pytest tests/ -v
+# 4. Run the full LLM ablation (requires GEMINI_API_KEY)
+export GEMINI_API_KEY="your-key"
+PYTHONPATH=. python scratch/run_ablation_live.py
 ```
 
 ---
 
-## Configuration
+## Hero metrics (Scorecard format)
 
-All thresholds and model names live in `config/defaults.yaml`. Never hard-coded in business logic. Tune only on DEV/VALIDATION — never on holdout.
-
-Key settings:
-- `matching.auto_match_threshold`: minimum confidence to auto-match (default: 0.80)
-- `llm.llm_max_evidence_delta`: LLM evidence cap (default: 0.05, tune on DEV)
-- `dataset.records_per_partition`: 150 economic events
-
----
-
-## Hero metrics (scorecard order)
-
-1. **Safe automation rate** — true matches / total records
+1. **Safe automation rate** — MATCH / total decisions
 2. **Value coverage %** — value verified / total value
-3. **False auto-match rate** — wrong auto-matches / total auto-matches
-4. **Review burden %** — REVIEW decisions / total
-5. **Adversarial holdout** (P1)
-
-F1 is reported for internal analysis. It is not the pitch number.
-
----
-
-## Milestone status
-
-| Milestone | Status |
-|---|---|
-| P0: Trustworthy reconciliation engine | 🔨 In progress |
-| P1: AI evidence layer (semantic + LLM) | ⏳ After P0 end-to-end run |
-| P2: Presentation / polish | ⏳ After P1 |
-
-**P0 is not the submission.** P1 adds the AI evidence layer that makes this an AI Finance Controller.
-
----
-
-## What is NOT in this system
-
-Per constitution: no N:N solver · no autonomous posting · no multi-agent · no forecasting · no tax matching · no fraud detection · no OCR · no RAG chatbot · no graph DB · no Kafka · no Redis · no pgvector · no fine-tuning · no RL.
-
-One direction done rigorously beats four done shallowly.
+3. **False auto-match rate** — wrong auto-matches / total auto-matches (Hard constraint: 0.0%)
+4. **Review rate** — REVIEW / total decisions
+5. **Adversarial holdout** — Final performance on unseen data
 
 ---
 

@@ -8,7 +8,7 @@ class IngestService:
         self.db = db_session
         self.run_id = run_id
 
-    async def ingest(self, records: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def ingest(self, records: List[Dict[str, Any]]) -> Dict[str, Any]:
         accepted = 0
         deduplicated = 0
         rejected = 0

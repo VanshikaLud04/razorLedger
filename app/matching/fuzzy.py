@@ -1,4 +1,7 @@
+# pyrefly: ignore [missing-import]
 from rapidfuzz import fuzz
+# pyrefly: ignore [missing-import]
+from rapidfuzz.distance import JaroWinkler
 
 class FuzzyMatcher:
     def __init__(self, config: dict):
@@ -25,7 +28,7 @@ class FuzzyMatcher:
         
         if ref_a and ref_b:
             scores['reference_levenshtein'] = fuzz.ratio(ref_a, ref_b)
-            scores['reference_jaro_winkler'] = fuzz.jaro_winkler_similarity(ref_a, ref_b) * 100.0
+            scores['reference_jaro_winkler'] = JaroWinkler.normalized_similarity(ref_a, ref_b) * 100.0
             scores['reference_token_sort'] = fuzz.token_sort_ratio(ref_a, ref_b)
             scores['reference_partial'] = fuzz.partial_ratio(ref_a, ref_b)
             
@@ -34,23 +37,22 @@ class FuzzyMatcher:
         
         if cp_a and cp_b:
             scores['counterparty_levenshtein'] = fuzz.ratio(cp_a, cp_b)
-            scores['counterparty_jaro_winkler'] = fuzz.jaro_winkler_similarity(cp_a, cp_b) * 100.0
+            scores['counterparty_jaro_winkler'] = JaroWinkler.normalized_similarity(cp_a, cp_b) * 100.0
             scores['counterparty_token_sort'] = fuzz.token_sort_ratio(cp_a, cp_b)
             
         ref_scores = [
             scores['reference_levenshtein'],
             scores['reference_jaro_winkler'],
-            scores['reference_token_sort'],
-            scores['reference_partial']
+            scores['reference_token_sort']
         ]
-        composite_ref = max(ref_scores) / 100.0
+        composite_ref = max(ref_scores) / 100.0 if ref_scores else 0.0
         
         cp_scores = [
             scores['counterparty_levenshtein'],
             scores['counterparty_jaro_winkler'],
             scores['counterparty_token_sort']
         ]
-        composite_cp = max(cp_scores) / 100.0
+        composite_cp = max(cp_scores) / 100.0 if cp_scores else 0.0
         
         scores['reference_similarity_score'] = composite_ref
         scores['counterparty_similarity_score'] = composite_cp

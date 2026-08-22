@@ -13,6 +13,6 @@ class GeneratorConfig:
 PARTITION_SEEDS = {
     'DEV': 'razorledger-dev-v1',
     'VALIDATION': 'razorledger-val-v1',
-    'ADVERSARIAL_HOLDOUT': 'razorledger-adv-v1',
+    'TEST_ADVERSARIAL': 'razorledger-adv-v1',
     'FROZEN_UNSEEN': 'razorledger-unseen-v1',
 }

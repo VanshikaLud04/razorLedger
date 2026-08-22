@@ -65,7 +65,7 @@ class FinancialControlEngine:
         return ControlCheckResult('CTRL-002', 'PASS', 'Currencies consistent', [])
 
     def check_ctrl003_settlement_conservation(self, context: dict) -> ControlCheckResult:
-        if 'gateway_gross_minor' not in context:
+        if 'gateway_gross_minor' not in context or 'bank_credit_minor' not in context:
             return ControlCheckResult('CTRL-003', 'PASS', 'Not applicable', [])
             
         gross = context.get('gateway_gross_minor', 0)

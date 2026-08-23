@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RazorLedger - Reconciliation Run</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed-variant": "#46473f",
+                      "on-error": "#690005",
+                      "secondary-container": "#3131c0",
+                      "on-tertiary-fixed": "#1b1c15",
+                      "tertiary-fixed-dim": "#c7c7bc",
+                      "on-surface-variant": "#b9cbc2",
+                      "primary": "#fdfffc",
+                      "surface-container-high": "#272a2d",
+                      "surface-dim": "#111416",
+                      "inverse-surface": "#e1e2e5",
+                      "primary-container": "#00ffcc",
+                      "surface-container-low": "#191c1e",
+                      "secondary-fixed": "#e1e0ff",
+                      "tertiary": "#fffeff",
+                      "on-secondary-fixed": "#07006c",
+                      "outline-variant": "#3a4a44",
+                      "on-primary-fixed": "#002118",
+                      "surface-variant": "#323537",
+                      "on-tertiary-container": "#64645b",
+                      "error-container": "#93000a",
+                      "surface": "#111416",
+                      "on-primary-fixed-variant": "#00513f",
+                      "inverse-primary": "#006b54",
+                      "on-surface": "#e1e2e5",
+                      "outline": "#83958d",
+                      "on-secondary": "#1000a9",
+                      "on-error-container": "#ffdad6",
+                      "surface-bright": "#373a3c",
+                      "tertiary-container": "#e3e2d7",
+                      "on-secondary-fixed-variant": "#2f2ebe",
+                      "on-secondary-container": "#b0b2ff",
+                      "surface-container": "#1d2022",
+                      "tertiary-fixed": "#e4e3d7",
+                      "on-primary-container": "#00725a",
+                      "secondary-fixed-dim": "#c0c1ff",
+                      "primary-fixed-dim": "#00e0b3",
+                      "surface-container-lowest": "#0b0f11",
+                      "inverse-on-surface": "#2e3133",
+                      "surface-tint": "#00e0b3",
+                      "error": "#ffb4ab",
+                      "on-background": "#e1e2e5",
+                      "on-tertiary": "#303129",
+                      "primary-fixed": "#24ffcd",
+                      "on-primary": "#00382b",
+                      "surface-container-highest": "#323537",
+                      "background": "#111416",
+                      "secondary": "#c0c1ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "margin-desktop": "32px",
+                      "density-comfortable": "12px",
+                      "density-compact": "4px",
+                      "unit": "4px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-caps": [
+                              "JetBrains Mono"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "code-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-lg-mobile": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-caps": [
+                              "10px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.08em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "code-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-active {
+            box-shadow: 0 0 15px rgba(0, 224, 179, 0.2);
+        }
+        .border-inner-light {
+            box-shadow: inset 0 0 0 1px rgba(253, 255, 252, 0.1);
+        }
+        .border-inner-mint {
+            box-shadow: inset 0 0 0 1px rgba(0, 224, 179, 0.2);
+        }
+        .flow-line {
+            stroke-dasharray: 4;
+            animation: dash 20s linear infinite;
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -1000;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md h-screen w-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest flex flex-col h-screen fixed left-0 top-0 h-full w-64 border-r border-outline-variant z-50">
+<div class="p-margin-desktop border-b border-outline-variant">
+<div class="flex items-center gap-3"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVKce6mVyXS3ygRTLNBk8ytHI9_9zW4x1Is_TBD9k6E0lfXd4jKzpjZZ9hPbB3D2MeBD-UIMof6mJVJ9pvBtS2vDlXo0zGW4msa2NmIpxkZOTZoGvxHQftnMKC_t2qPbNUMZ9tGuDin4XglrgoNUgy6BpqGBuwikd0mPh7GZ6jEmTGIifbvV2fanRqKe6h4NxnPJ7prr4jF1DoaZm4frdWnj7ayBtC2EmN8ydDLkNrJe-VY2pZ1Npn" class="h-8 w-8" alt="RazorLedger Logo"><h1 class="font-headline-md text-headline-md font-bold text-primary">RazorLedger</h1></div>
+</div>
+<div class="flex-1 py-unit flex flex-col gap-1 overflow-y-auto px-unit">
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+Dashboard
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-primary-fixed bg-on-primary-fixed-variant/10 border-r-2 border-primary-fixed font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+Reconciliation Run
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">animated_images</span>
+Forensic Review
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">security</span>
+Safety & Controls
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+Model Performance
+</a>
+</div>
+<div class="p-gutter border-t border-outline-variant">
+<button class="w-full bg-primary-container text-on-primary-fixed font-label-caps text-label-caps py-2 rounded-DEFAULT active:scale-95 transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+New Reconciliation Run
+</button>
+</div>
+<div class="py-unit border-t border-outline-variant flex flex-col gap-1 px-unit pb-gutter">
+<a class="flex items-center gap-3 px-4 py-2 rounded-DEFAULT text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+Settings
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-DEFAULT text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">help</span>
+Support
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-64 relative bg-background">
+<!-- TopAppBar -->
+<header class="bg-surface-dim/80 backdrop-blur-md docked full-width top-0 h-16 border-b border-outline-variant flex justify-between items-center w-full px-margin-desktop sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<h1 class="font-headline-md text-headline-md tracking-tighter text-primary md:hidden">RazorLedger</h1>
+<div class="hidden md:flex gap-4">
+<span class="text-on-surface-variant font-label-caps text-label-caps font-code-sm text-code-sm">System Status: Nominal</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:block py-1.5 px-4 bg-primary-fixed text-on-primary font-code-sm text-code-sm rounded-DEFAULT hover:opacity-90 active:scale-95 transition-all">New Reconciliation Run</button>
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant hover:text-primary-fixed cursor-pointer p-1 rounded-full focus-within:ring-1 focus-within:ring-primary-fixed"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-on-surface-variant hover:text-primary-fixed cursor-pointer p-1 rounded-full focus-within:ring-1 focus-within:ring-primary-fixed"><span class="material-symbols-outlined">settings</span></button>
+<div class="w-8 h-8 rounded-full ml-2 border border-outline overflow-hidden md:hidden">
+<img class="w-full h-full object-cover" data-alt="A stark, minimalist profile avatar placeholder rendered in dark grayscale tones with a faint geometric grid overlay, typical of internal administrative tools." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcEuahcbkai4Z5E7l9p7tDNXPB4pzFMJNbx7zVDBxSw-nXdAiCKHjXtIbcXE3OhfYyeFwHNEOpelaUAf-GdwsYYnQIQK0z0WIg1ENUPV2XCpcpi0EYM4qDS3sF7yuZKypzAiv10ekcSF8Vz4XBWKbl4KvMkLcUiNtQp1lOjFlHAfmZkeYBulkuzLGFRU3ZdmC-d1BWJEdQe5BiR2O6KnVle2-83gcITcQJwjlJbcGdU2CxXyV_zMNd"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop">
+<!-- Header & Metadata -->
+<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-surface-variant pb-4">
+<div>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-primary tracking-tight mb-2">Reconciliation Pipeline</h2>
+<div class="flex flex-wrap gap-3">
+<span class="px-2 py-0.5 bg-surface-container text-tertiary-fixed-dim font-code-sm text-code-sm rounded-sm border-inner-light">RUN_ID: RZ-9982-A</span>
+<span class="px-2 py-0.5 bg-surface-container text-tertiary-fixed-dim font-code-sm text-code-sm rounded-sm border-inner-light">PARTITION: TEST_ADVERSARIAL</span>
+<span class="px-2 py-0.5 bg-surface-container text-on-secondary-container font-code-sm text-code-sm rounded-sm border-inner-light">MODEL: qwen-27b</span>
+</div>
+</div>
+<div class="text-right">
+<div class="font-label-caps text-label-caps text-on-surface-variant mb-1">PIPELINE LATENCY</div>
+<div class="font-code-sm text-code-sm text-primary">1,240 ms</div>
+</div>
+</div>
+<!-- Pipeline Visualization Container -->
+<div class="relative w-full h-[500px] bg-surface-container-lowest border border-outline-variant rounded-lg p-6 flex flex-col overflow-hidden mb-gutter border-inner-light">
+<!-- SVG Connections -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0" xmlns="http://www.w3.org/2000/svg">
+<path class="flow-line" d="M 100,80 Q 200,80 300,150 T 500,150 T 700,250 T 900,250" fill="none" stroke="#323537" stroke-width="2"></path>
+<!-- Placeholder paths representing complex flows -->
+<path class="flow-line" d="M 100,80 L 150,80" fill="none" opacity="0.5" stroke="#00e0b3" stroke-width="1"></path>
+<path class="flow-line" d="M 500,150 C 600,150 600,250 700,250" fill="none" opacity="0.3" stroke="#b0b2ff" stroke-width="1"></path>
+</svg>
+<div class="font-label-caps text-label-caps text-on-surface-variant absolute top-4 left-4 z-10">POPULATION COLLAPSE MODEL</div>
+<!-- Stages Row 1 -->
+<div class="flex justify-between items-start w-full z-10 mt-12 relative">
+<!-- Stage A -->
+<div class="w-48 bg-surface border border-outline-variant p-3 rounded-DEFAULT relative border-inner-light">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">STAGE A</span>
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span>
+</div>
+<h3 class="font-code-sm text-code-sm text-primary mb-1">Deterministic</h3>
+<p class="font-code-sm text-[10px] text-tertiary-fixed-dim">10,402 Entities</p>
+</div>
+<!-- Stage B -->
+<div class="w-48 bg-surface border border-outline-variant p-3 rounded-DEFAULT relative border-inner-light translate-y-12">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">STAGE B</span>
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim opacity-70"></span>
+</div>
+<h3 class="font-code-sm text-code-sm text-primary mb-1">Fuzzy Match</h3>
+<p class="font-code-sm text-[10px] text-tertiary-fixed-dim">4,120 Entities</p>
+</div>
+<!-- Stage C -->
+<div class="w-48 bg-surface border border-on-secondary-container/30 p-3 rounded-DEFAULT relative border-inner-light translate-y-24">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-label-caps text-secondary">STAGE C</span>
+<span class="material-symbols-outlined text-[14px] text-secondary">psychology</span>
+</div>
+<h3 class="font-code-sm text-code-sm text-on-secondary-container mb-1">Semantic (Indigo)</h3>
+<p class="font-code-sm text-[10px] text-tertiary-fixed-dim">1,890 Entities</p>
+</div>
+</div>
+<!-- Stages Row 2 -->
+<div class="flex justify-between items-end w-full h-full z-10 pb-4 relative">
+<!-- Stage D -->
+<div class="w-56 bg-surface-container border border-outline-variant p-4 rounded-DEFAULT relative border-inner-light glow-active -translate-y-12">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-label-caps text-primary">STAGE D (PROMINENT)</span>
+<span class="material-symbols-outlined text-[16px] text-primary">speed</span>
+</div>
+<h3 class="font-headline-md text-[16px] text-primary mb-2">Scoring Engine</h3>
+<div class="h-1 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary w-3/4"></div>
+</div>
+<p class="font-code-sm text-[10px] text-tertiary-fixed-dim mt-2">845 Candidates</p>
+</div>
+<!-- Stage E -->
+<div class="w-56 bg-surface border border-on-secondary-container/50 p-4 rounded-DEFAULT relative border-inner-light translate-x-12 -translate-y-4">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-label-caps text-secondary">STAGE E</span>
+<span class="material-symbols-outlined text-[14px] text-error">warning</span>
+</div>
+<h3 class="font-code-sm text-code-sm text-on-secondary-container mb-2">LLM Reasoning</h3>
+<div class="border-t border-dashed border-surface-variant pt-2">
+<div class="flex justify-between items-center mb-1">
+<span class="font-code-sm text-[10px] text-tertiary-fixed-dim">Processed</span>
+<span class="font-code-sm text-[10px] text-primary">162</span>
+</div>
+<div class="flex justify-between items-center bg-error-container/20 px-2 py-1 rounded-sm border border-error/30 mt-2">
+<span class="font-code-sm text-[10px] text-error">AI Abstention</span>
+<span class="font-code-sm text-[10px] text-error">3.4%</span>
+</div>
+</div>
+</div>
+<!-- Stage F -->
+<div class="w-64 bg-surface-container-high border border-primary-fixed/50 p-4 rounded-DEFAULT relative border-inner-mint ml-auto">
+<div class="absolute -left-10 top-1/2 -translate-y-1/2 font-code-sm text-code-sm text-primary">
+                            162 <span class="material-symbols-outlined text-[12px] align-middle">arrow_forward</span>
+</div>
+<div class="flex justify-between items-center mb-3">
+<span class="font-label-caps text-label-caps text-primary-fixed">STAGE F</span>
+<span class="material-symbols-outlined text-[16px] text-primary-fixed">verified_user</span>
+</div>
+<h3 class="font-code-sm text-[14px] text-primary mb-4">Financial Verifier</h3>
+<div class="space-y-2">
+<div class="flex justify-between items-center p-2 bg-surface-dim border border-outline-variant rounded-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-fixed"></span>
+<span class="font-code-sm text-code-sm text-tertiary">Verified</span>
+</div>
+<span class="font-code-sm text-code-sm text-primary-fixed">70</span>
+</div>
+<div class="flex justify-between items-center p-2 bg-surface-dim border border-outline-variant rounded-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[amber]"></span>
+<span class="font-code-sm text-code-sm text-tertiary">Intercepted</span>
+</div>
+<span class="font-code-sm text-code-sm text-[amber]">92</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Detail Area (Optional, for balance) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 border-inner-light">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-4">ABSTENTION LOGS (SAMPLE)</h4>
+<div class="space-y-2">
+<div class="flex justify-between items-center border-b border-surface-variant pb-2">
+<span class="font-code-sm text-code-sm text-tertiary-fixed-dim truncate w-48">TX_9921_AMB_01</span>
+<span class="font-code-sm text-code-sm text-error bg-error-container/10 px-2 py-0.5 rounded-sm border border-error/20">CONFIDENCE_LOW</span>
+</div>
+<div class="flex justify-between items-center border-b border-surface-variant pb-2">
+<span class="font-code-sm text-code-sm text-tertiary-fixed-dim truncate w-48">TX_9921_AMB_02</span>
+<span class="font-code-sm text-code-sm text-error bg-error-container/10 px-2 py-0.5 rounded-sm border border-error/20">SEMANTIC_DRIFT</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 border-inner-light">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-4">SYSTEM RESOURCES</h4>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between font-code-sm text-[10px] text-tertiary-fixed-dim mb-1"><span>GPU UTILIZATION</span><span>88%</span></div>
+<div class="h-1 w-full bg-surface-variant rounded-full overflow-hidden"><div class="h-full bg-primary-fixed-dim w-[88%]"></div></div>
+</div>
+<div>
+<div class="flex justify-between font-code-sm text-[10px] text-tertiary-fixed-dim mb-1"><span>MEMORY PIPELINE</span><span>42GB / 64GB</span></div>
+<div class="h-1 w-full bg-surface-variant rounded-full overflow-hidden"><div class="h-full bg-secondary-fixed w-[65%]"></div></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

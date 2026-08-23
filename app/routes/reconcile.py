@@ -39,6 +39,27 @@ async def run_pipeline_background(run_id: str, partition: str):
         print(f"Pipeline error: {e}")
         _RUNS[run_id]["status"] = "FAILED"
 
+@router.get("/reconcile/latest/results", response_model=RunScorecard)
+async def get_latest_results(db=Depends(get_db)):
+    if not _RUNS:
+        return RunScorecard(
+            run_id=uuid.uuid4(),
+            records_total=0,
+            auto_resolved=0,
+            review=0,
+            no_match=0,
+            pending=0,
+            value_covered_minor=0,
+            value_verified_minor=0,
+            unsafe_automation_pct=0.0,
+            review_burden_pct=0.0,
+            adversarial_holdout=None,
+            ablation=None
+        )
+    # Get last run
+    last_run_id = list(_RUNS.keys())[-1]
+    return await get_results(last_run_id, db)
+
 @router.get("/reconcile/{run_id}/results", response_model=RunScorecard)
 async def get_results(run_id: str, db=Depends(get_db)):
     run_data = _RUNS.get(run_id)

@@ -113,9 +113,3 @@ PYTHONPATH=. python scripts/run_e2e.py
 3. **False auto-match rate** — wrong auto-matches / total auto-matches (Hard constraint: 0.0%)
 4. **Review rate** — REVIEW / total decisions
 5. **Adversarial holdout** — Final performance on unseen data
-
----
-
-## Sourcing note
-
-All Razorpay-specific language refers only to public Razorpay product documentation. Nothing here claims to represent internal Razorpay architecture, policy, or roadmap.

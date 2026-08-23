@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RazorLedger - Safety &amp; Controls</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#46473f",
+                        "on-error": "#690005",
+                        "secondary-container": "#3131c0",
+                        "on-tertiary-fixed": "#1b1c15",
+                        "tertiary-fixed-dim": "#c7c7bc",
+                        "on-surface-variant": "#b9cbc2",
+                        "primary": "#fdfffc",
+                        "surface-container-high": "#272a2d",
+                        "surface-dim": "#111416",
+                        "inverse-surface": "#e1e2e5",
+                        "primary-container": "#00ffcc",
+                        "surface-container-low": "#191c1e",
+                        "secondary-fixed": "#e1e0ff",
+                        "tertiary": "#fffeff",
+                        "on-secondary-fixed": "#07006c",
+                        "outline-variant": "#3a4a44",
+                        "on-primary-fixed": "#002118",
+                        "surface-variant": "#323537",
+                        "on-tertiary-container": "#64645b",
+                        "error-container": "#93000a",
+                        "surface": "#111416",
+                        "on-primary-fixed-variant": "#00513f",
+                        "inverse-primary": "#006b54",
+                        "on-surface": "#e1e2e5",
+                        "outline": "#83958d",
+                        "on-secondary": "#1000a9",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#373a3c",
+                        "tertiary-container": "#e3e2d7",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-secondary-container": "#b0b2ff",
+                        "surface-container": "#1d2022",
+                        "tertiary-fixed": "#e4e3d7",
+                        "on-primary-container": "#00725a",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "primary-fixed-dim": "#00e0b3",
+                        "surface-container-lowest": "#0b0f11",
+                        "inverse-on-surface": "#2e3133",
+                        "surface-tint": "#00e0b3",
+                        "error": "#ffb4ab",
+                        "on-background": "#e1e2e5",
+                        "on-tertiary": "#303129",
+                        "primary-fixed": "#24ffcd",
+                        "on-primary": "#00382b",
+                        "surface-container-highest": "#323537",
+                        "background": "#111416",
+                        "secondary": "#c0c1ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin-desktop": "32px",
+                        "density-comfortable": "12px",
+                        "density-compact": "4px",
+                        "unit": "4px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-md": ["Hanken Grotesk"],
+                        "code-sm": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["10px", { "lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "code-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .symbol-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hairline-border {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hairline-b {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hairline-r {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .mint-glow {
+            box-shadow: 0 0 4px 0px rgba(0, 224, 179, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest dark:bg-surface-container-lowest text-primary-fixed dark:text-primary-fixed font-headline-md text-headline-md font-label-caps text-label-caps h-full w-64 border-r border-outline-variant flat no shadows flex flex-col h-screen fixed left-0 top-0 z-40 hidden md:flex">
+<!-- Header -->
+<div class="p-gutter border-b border-outline-variant flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center hairline-border overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A highly detailed cinematic 3D render of a futuristic avatar. The avatar is abstract, representing a high-tech system operator or AI core. The aesthetic is dark mode, featuring deep blacks (#111416) with subtle, precise neon mint (#00ffcc) accents lighting up geometric metallic surfaces. The overall mood is authoritative, precise, and forensically detailed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3L6Izk_QO2xoAq_pfHevMqmwydfn6_-_qLVbwE5D_ZcEmJ0jSqJX2pOQIdaEGcXmrdSYdQHc2Ex41fa_b_McQGxNRNF6DIkQDk49L7qcvojNhAdpqZfNe_rMdfjIFMh9RrqPE2dHmn8R5hpP0UXcq-LHegoXGeDIDCRdd3OnFSOqEIh3PgXzD5LgauCEMe60C8D-VT7ZbOtnFZma2t9zCESW1SmFUDYLmOvyhFtrFA3a1PeeC9wD9"/>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tight">RazorLedger</h1>
+<p class="font-code-sm text-code-sm text-on-surface-variant">v4.2.0-STABLE</p>
+</div>
+</div>
+<!-- CTA -->
+<div class="p-gutter">
+<button class="w-full bg-surface-tint text-surface-container-lowest font-label-caps text-label-caps py-2 px-4 rounded flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                Execute Commit
+            </button>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto py-2 flex flex-col gap-1 px-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant font-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant font-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[18px]">account_balance</span>
+<span>Reconciliation Run</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant font-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[18px]">animated_images</span>
+<span>Forensic Review</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-primary-fixed bg-on-primary-fixed-variant/10 border-r-2 border-primary-fixed hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[18px] symbol-filled">security</span>
+<span>Safety &amp; Controls</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant font-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[18px]">monitoring</span>
+<span>Model Performance</span>
+</a>
+</div>
+<!-- Footer -->
+<div class="p-gutter border-t border-outline-variant flex flex-col gap-1 px-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant font-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant font-label-caps hover:bg-surface-container-high transition-colors duration-150 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+<span>Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-64 bg-background">
+<!-- TopAppBar -->
+<header class="bg-surface-dim/80 backdrop-blur-md text-primary-fixed dark:text-primary-fixed font-label-caps text-label-caps font-code-sm text-code-sm docked full-width top-0 h-16 border-b border-outline-variant flat no shadows flex justify-between items-center w-full px-margin-desktop sticky top-0 z-50">
+<div class="flex items-center gap-6">
+<!-- Mobile Menu Button -->
+<button class="md:hidden text-on-surface-variant hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="hidden md:flex font-code-sm text-code-sm text-on-surface-variant">
+                    System Status: v4.2.0-STABLE
+                </div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant hover:text-primary-fixed cursor-pointer transition-colors p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-fixed cursor-pointer transition-colors p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<button class="hidden md:block bg-transparent border border-outline-variant text-on-surface font-label-caps text-label-caps py-1 px-3 rounded hover:border-primary-fixed transition-colors">
+                    Execute Commit
+                </button>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop flex flex-col gap-6">
+<!-- Hero -->
+<div class="flex flex-col gap-2">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary tracking-tight">Immutable Safety Controls</h2>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[16px]">gpp_bad</span>
+<p class="font-code-sm text-code-sm text-error">Read-only interception wall. Financial controls cannot be bypassed.</p>
+</div>
+</div>
+<!-- Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Architecture Diagram -->
+<div class="lg:col-span-8 bg-surface-container-low rounded-lg hairline-border p-4 flex flex-col gap-4 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-surface-container/50 to-transparent pointer-events-none z-0"></div>
+<div class="flex justify-between items-center z-10 relative">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Architecture: Control Gate</h3>
+<span class="font-code-sm text-code-sm text-surface-tint bg-surface-tint/10 px-2 py-0.5 rounded hairline-border">ACTIVE</span>
+</div>
+<div class="flex-1 min-h-[300px] w-full relative z-10 flex items-center justify-center p-4">
+<div class="w-full h-full relative" data-alt="A highly technical, stark schematic diagram depicting a 'Control Gate' in a dark-mode forensic UI. The background is extremely dark, almost black obsidian. Fine, microscopic lines in 0.5pt mint green (#00ffcc) and stark white trace data flows. Red warning accents (#ffb4ab) indicate blocked pathways. The aesthetic is cinematic hardware, resembling a glowing radar or data intercept map. The diagram should feel precise, read-only, and unyielding." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA4MYKn6k32NWzM2SScuTuvDNFqJ8yY4csM9nQVZGqlD-iY2RXDTlGTJkSkvmq-0w0iygn7qR5iAtJVSQRBmMPIi91E3pmOZByn8KLykPHQB_uys-m22SqI0PtsKf7wq5OJAPybK2BR-OzgSKavHqr2N7vXdE--1qQEJWy1QFjHI6ts9YrwYWH1pr6bdDNKskww0sAMEAUqFSvnTj5V9sVzMfWey0O0JzfBDbqSp2qre1hIJlUTwNMG')">
+<!-- Visual placeholder for the diagram -->
+<div class="absolute inset-0 flex flex-col justify-center items-center gap-6">
+<div class="w-3/4 h-[2px] bg-gradient-to-r from-transparent via-outline-variant to-transparent relative">
+<div class="absolute left-1/4 -top-[30px] flex flex-col items-center">
+<div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+<div class="w-px h-8 bg-error/50"></div>
+</div>
+<div class="absolute right-1/4 -top-[30px] flex flex-col items-center">
+<div class="w-2 h-2 rounded-full bg-surface-tint"></div>
+<div class="w-px h-8 bg-surface-tint/50"></div>
+</div>
+</div>
+<div class="px-6 py-3 border border-error bg-error/10 text-error font-label-caps text-label-caps rounded flex items-center gap-2 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[16px]">block</span>
+                                    HARD INTERCEPT
+                                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Analytics Stack -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Stat 1 -->
+<div class="bg-surface-container-low rounded-lg hairline-border p-4 flex flex-col justify-between flex-1 relative overflow-hidden">
+<div class="absolute right-0 top-0 w-24 h-24 bg-error/5 rounded-bl-full blur-xl"></div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest relative z-10">Prevented Unsafe Matches</h3>
+<div class="mt-4 relative z-10">
+<div class="font-headline-lg text-headline-lg text-primary">$4.2M</div>
+<div class="font-code-sm text-code-sm text-error mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                                +12.4% vs last period
+                            </div>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="bg-surface-container-low rounded-lg hairline-border p-4 flex flex-col justify-between flex-1 relative overflow-hidden">
+<div class="absolute right-0 top-0 w-24 h-24 bg-surface-tint/5 rounded-bl-full blur-xl"></div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest relative z-10">Interception Volume</h3>
+<div class="mt-4 relative z-10 flex flex-col gap-2">
+<div class="flex items-center justify-between font-code-sm text-code-sm">
+<span class="text-on-surface">CTRL-003</span>
+<span class="text-error font-bold">1,204</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-error h-full" style="width: 75%"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm mt-2">
+<span class="text-on-surface">CTRL-007</span>
+<span class="text-on-surface-variant">842</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-outline-variant h-full" style="width: 45%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Controls List -->
+<div class="bg-surface-container-low rounded-lg hairline-border flex flex-col overflow-hidden">
+<div class="px-4 py-3 border-b border-outline-variant bg-surface/50 flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Active Control Protocols</h3>
+<div class="font-code-sm text-code-sm text-surface-tint flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                        10/10 Enforced
+                    </div>
+</div>
+<div class="flex flex-col">
+<!-- Row 1 -->
+<div class="flex flex-col md:flex-row md:items-center px-4 py-3 hairline-b hover:bg-surface-container transition-colors group">
+<div class="w-32 font-code-sm text-code-sm text-primary mb-1 md:mb-0">CTRL-001</div>
+<div class="flex-1 font-body-md text-on-surface text-sm">Cross-border fund flow anomaly detection</div>
+<div class="w-32 flex items-center justify-end">
+<span class="font-label-caps text-[10px] text-surface-tint border border-surface-tint/30 bg-surface-tint/10 px-2 py-0.5 rounded">ENFORCED</span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex flex-col md:flex-row md:items-center px-4 py-3 hairline-b hover:bg-surface-container transition-colors group">
+<div class="w-32 font-code-sm text-code-sm text-primary mb-1 md:mb-0 flex items-center gap-2">
+                            CTRL-002
+                            <div class="w-1.5 h-1.5 rounded-full bg-error"></div>
+</div>
+<div class="flex-1 font-body-md text-on-surface text-sm">Sanctions list exact-match block</div>
+<div class="w-32 flex items-center justify-end">
+<span class="font-label-caps text-[10px] text-surface-tint border border-surface-tint/30 bg-surface-tint/10 px-2 py-0.5 rounded">ENFORCED</span>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex flex-col md:flex-row md:items-center px-4 py-3 hairline-b hover:bg-surface-container transition-colors group">
+<div class="w-32 font-code-sm text-code-sm text-primary mb-1 md:mb-0">CTRL-003</div>
+<div class="flex-1 font-body-md text-on-surface text-sm">Velocity limits on high-risk corridors</div>
+<div class="w-32 flex items-center justify-end">
+<span class="font-label-caps text-[10px] text-surface-tint border border-surface-tint/30 bg-surface-tint/10 px-2 py-0.5 rounded">ENFORCED</span>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="flex flex-col md:flex-row md:items-center px-4 py-3 hairline-b hover:bg-surface-container transition-colors group">
+<div class="w-32 font-code-sm text-code-sm text-primary mb-1 md:mb-0">CTRL-004</div>
+<div class="flex-1 font-body-md text-on-surface text-sm">Multi-signature verification routing</div>
+<div class="w-32 flex items-center justify-end">
+<span class="font-label-caps text-[10px] text-surface-tint border border-surface-tint/30 bg-surface-tint/10 px-2 py-0.5 rounded">ENFORCED</span>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="flex flex-col md:flex-row md:items-center px-4 py-3 hover:bg-surface-container transition-colors group">
+<div class="w-32 font-code-sm text-code-sm text-primary mb-1 md:mb-0">CTRL-005</div>
+<div class="flex-1 font-body-md text-on-surface text-sm text-on-surface-variant/70 italic">... showing 5 of 10 controls</div>
+<div class="w-32 flex items-center justify-end">
+<span class="font-label-caps text-[10px] text-surface-tint border border-surface-tint/30 bg-surface-tint/10 px-2 py-0.5 rounded">ENFORCED</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

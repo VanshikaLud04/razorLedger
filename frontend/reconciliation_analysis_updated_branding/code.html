@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RazorLedger - Reconciliation Run</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error": "#ffb4ab",
+                        "inverse-primary": "#006c49",
+                        "tertiary-fixed": "#d8e3fb",
+                        "on-tertiary-container": "#2e394c",
+                        "outline-variant": "#3c4a42",
+                        "surface-variant": "#273647",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary-fixed-variant": "#005236",
+                        "on-surface": "#d4e4fa",
+                        "on-secondary": "#213145",
+                        "inverse-on-surface": "#233143",
+                        "on-primary-container": "#00422b",
+                        "on-tertiary-fixed-variant": "#3c475a",
+                        "surface": "#051424",
+                        "outline": "#86948a",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-fixed": "#002113",
+                        "tertiary-fixed-dim": "#bcc7de",
+                        "on-secondary-container": "#a9bad3",
+                        "tertiary-container": "#98a3ba",
+                        "on-background": "#d4e4fa",
+                        "primary-container": "#10b981",
+                        "surface-container-lowest": "#010f1f",
+                        "surface-container-high": "#1c2b3c",
+                        "secondary-container": "#3a4a5f",
+                        "surface-container-highest": "#273647",
+                        "on-tertiary": "#263143",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed": "#111c2d",
+                        "surface-tint": "#4edea3",
+                        "inverse-surface": "#d4e4fa",
+                        "on-error-container": "#ffdad6",
+                        "on-surface-variant": "#bbcabf",
+                        "primary": "#4edea3",
+                        "on-secondary-fixed": "#0b1c30",
+                        "tertiary": "#bcc7de",
+                        "on-primary": "#003824",
+                        "surface-bright": "#2c3a4c",
+                        "secondary": "#b7c8e1",
+                        "surface-dim": "#051424",
+                        "surface-container": "#122131",
+                        "primary-fixed-dim": "#4edea3",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-low": "#0d1c2d",
+                        "background": "#051424",
+                        "primary-fixed": "#6ffbbe"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "margin": "16px",
+                        "unit": "4px",
+                        "gutter": "12px",
+                        "container-max": "1440px"
+                    },
+                    fontFamily: {
+                        "mono-label": ["JetBrains Mono"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "mono-data": ["JetBrains Mono"]
+                    },
+                    fontSize: {
+                        "mono-label": ["10px", { "lineHeight": "12px", "fontWeight": "700" }],
+                        "display-lg": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "mono-data": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom scrollbar for high-density tables */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #051424; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3c4a42; 
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #86948a; 
+        }
+        
+        .funnel-connector {
+            position: relative;
+        }
+        .funnel-connector::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 1rem;
+            height: 1px;
+            background-color: #3c4a42;
+            transform: translateY(-50%);
+            z-index: -1;
+        }
+        .funnel-card:last-child .funnel-connector::after {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-sm overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<div class="flex h-screen w-full">
+<!-- SIDENAVBAR -->
+<nav class="bg-surface-container-low border-r border-outline-variant fixed left-0 top-0 h-screen w-64 flex flex-col p-4 gap-2 z-20 hidden md:flex">
+<!-- Header -->
+<div class="mb-6 px-2">
+<div class="font-headline-md text-headline-md text-primary font-bold tracking-tighter mb-1"><div class="flex items-center gap-2"><img alt="RazorLedger Logo" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVKce6mVyXS3ygRTLNBk8ytHI9_9zW4x1Is_TBD9k6E0lfXd4jKzpjZZ9hPbB3D2MeBD-UIMof6mJVJ9pvBtS2vDlXo0zGW4msa2NmIpxkZOTZoGvxHQftnMKC_t2qPbNUMZ9tGuDin4XglrgoNUgy6BpqGBuwikd0mPh7GZ6jEmTGIifbvV2fanRqKe6h4NxnPJ7prr4jF1DoaZm4frdWnj7ayBtC2EmN8ydDLkNrJe-VY2pZ1Npn"/><span>RazorLedger Console</span></div></div>
+<div class="font-mono-label text-mono-label text-on-surface-variant flex items-center justify-between">
+<span>System Auditor Profile</span>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span class="font-mono-label text-mono-label group-hover:text-primary transition-colors">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined text-[18px]">rule_folder</span>
+<span class="font-mono-label text-mono-label group-hover:text-primary transition-colors">Review Queue</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container font-bold rounded-lg scale-[0.98] transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">history_edu</span>
+<span class="font-mono-label text-mono-label">Audit Trail</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span class="font-mono-label text-mono-label group-hover:text-primary transition-colors">Controls &amp; Safety</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined text-[18px]">query_stats</span>
+<span class="font-mono-label text-mono-label group-hover:text-primary transition-colors">Model Performance</span>
+</a>
+</div>
+<!-- CTA & Footer Tabs -->
+<div class="mt-auto flex flex-col gap-2 pt-4 border-t border-outline-variant">
+<button class="w-full bg-surface border border-outline-variant hover:border-error text-error font-mono-label text-mono-label py-2 rounded transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">sync_problem</span>
+                    Force Sync Ledger
+                </button>
+<div class="flex flex-col gap-1 mt-2">
+<a class="flex items-center gap-3 px-3 py-1.5 text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">monitor_heart</span>
+<span class="font-mono-label text-mono-label">System Health</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span class="font-mono-label text-mono-label">API Docs</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT AREA -->
+<div class="flex-1 flex flex-col md:ml-64 w-full bg-background relative h-screen">
+<!-- TOPNAVBAR -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center w-full px-margin h-16 shrink-0 sticky top-0 z-10 hidden md:flex">
+<div class="flex items-center gap-6 h-full">
+<div class="text-headline-md font-headline-md font-bold text-primary tracking-tighter"><div class="flex items-center gap-2"><img alt="RazorLedger Logo" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVKce6mVyXS3ygRTLNBk8ytHI9_9zW4x1Is_TBD9k6E0lfXd4jKzpjZZ9hPbB3D2MeBD-UIMof6mJVJ9pvBtS2vDlXo0zGW4msa2NmIpxkZOTZoGvxHQftnMKC_t2qPbNUMZ9tGuDin4XglrgoNUgy6BpqGBuwikd0mPh7GZ6jEmTGIifbvV2fanRqKe6h4NxnPJ7prr4jF1DoaZm4frdWnj7ayBtC2EmN8ydDLkNrJe-VY2pZ1Npn"/><span>RazorLedger</span></div></div>
+<nav class="flex h-full items-end gap-6 ml-4">
+<a class="text-on-surface-variant font-medium pb-2 text-mono-label font-mono-label hover:text-primary-fixed-dim transition-colors uppercase" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-medium pb-2 text-mono-label font-mono-label hover:text-primary-fixed-dim transition-colors uppercase" href="#">Review Queue</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-2 text-mono-label font-mono-label uppercase opacity-80" href="#">Audit Trail</a>
+<a class="text-on-surface-variant font-medium pb-2 text-mono-label font-mono-label hover:text-primary-fixed-dim transition-colors uppercase" href="#">Controls &amp; Safety</a>
+<a class="text-on-surface-variant font-medium pb-2 text-mono-label font-mono-label hover:text-primary-fixed-dim transition-colors uppercase" href="#">Model Performance</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-3 text-on-surface-variant">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">notifications_active</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">settings</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">account_circle</span></button>
+</div>
+<div class="h-6 w-px bg-outline-variant mx-1"></div>
+<button class="bg-primary-container text-on-primary-container font-mono-label text-mono-label px-4 py-2 rounded flex items-center gap-2 hover:brightness-110 transition-all font-bold">
+                        Execute Ledger Commit
+                    </button>
+</div>
+</header>
+<!-- SCROLLABLE CANVAS -->
+<main class="flex-1 overflow-y-auto p-gutter flex flex-col gap-gutter">
+<!-- METADATA HEADER -->
+<section class="bg-surface border border-outline-variant p-4 rounded flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">schema</span>
+                                Reconciliation Run
+                            </h1>
+<div class="font-mono-data text-mono-data text-on-surface-variant mt-1">ID: #RZN-993-A • Executed: 2023-10-27 14:32:00Z</div>
+</div>
+<div class="bg-primary-container/20 border-l-2 border-primary text-primary px-3 py-1 font-mono-label text-mono-label flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                            COMPLETED_WITH_EXCEPTIONS
+                        </div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-outline-variant">
+<div>
+<div class="font-mono-label text-mono-label text-outline mb-1 uppercase">Dataset Partition</div>
+<div class="font-mono-data text-mono-data text-on-surface bg-surface-container-low px-2 py-1 rounded inline-block border border-outline-variant">TEST_ADVERSARIAL</div>
+</div>
+<div>
+<div class="font-mono-label text-mono-label text-outline mb-1 uppercase">LLM Model</div>
+<div class="font-mono-data text-mono-data text-secondary-fixed bg-surface-container-low px-2 py-1 rounded inline-block border border-outline-variant flex items-center gap-2 w-fit">
+<span class="material-symbols-outlined text-[14px]">psychology</span>
+                                qwen/qwen3.6-27b
+                            </div>
+</div>
+<div>
+<div class="font-mono-label text-mono-label text-outline mb-1 uppercase">Embedding Model</div>
+<div class="font-mono-data text-mono-data text-secondary-fixed bg-surface-container-low px-2 py-1 rounded inline-block border border-outline-variant flex items-center gap-2 w-fit">
+<span class="material-symbols-outlined text-[14px]">layers</span>
+                                BAAI/bge-small-en-v1.5
+                            </div>
+</div>
+<div>
+<div class="font-mono-label text-mono-label text-outline mb-1 uppercase">Total Processing Time</div>
+<div class="font-mono-data text-mono-data text-on-surface bg-surface-container-low px-2 py-1 rounded inline-block border border-outline-variant">00:14:22.450</div>
+</div>
+</div>
+</section>
+<!-- PIPELINE FUNNEL (A-F) -->
+<section class="flex flex-col gap-2">
+<h2 class="font-mono-label text-mono-label text-on-surface-variant uppercase flex items-center gap-2 pl-1">
+<span class="material-symbols-outlined text-[16px]">filter_alt</span>
+                        Pipeline Funnel Analysis
+                    </h2>
+<div class="flex overflow-x-auto pb-4 pt-2 -mx-2 px-2 snap-x">
+<!-- Stage A -->
+<div class="funnel-card shrink-0 w-64 bg-surface border border-outline-variant rounded p-3 flex flex-col gap-3 mr-6 relative snap-start">
+<div class="flex justify-between items-center border-b border-outline-variant pb-2">
+<div class="font-mono-label text-mono-label text-outline bg-surface-container-highest px-1.5 rounded">Stage A</div>
+<div class="font-mono-label text-mono-label text-on-surface uppercase">Deterministic</div>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data">
+<span class="text-on-surface-variant">Input:</span>
+<span class="text-on-surface">1,450,000</span>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data">
+<span class="text-on-surface-variant">Output:</span>
+<span class="text-primary font-bold">420,500</span>
+</div>
+<div class="mt-auto pt-2 text-[10px] font-mono-label text-outline">Exact match &amp; block rules applied.</div>
+<span class="material-symbols-outlined absolute -right-5 top-1/2 -translate-y-1/2 text-outline-variant z-10 bg-background text-[16px]">chevron_right</span>
+</div>
+<!-- Stage B -->
+<div class="funnel-card shrink-0 w-64 bg-surface border border-outline-variant rounded p-3 flex flex-col gap-3 mr-6 relative snap-start">
+<div class="flex justify-between items-center border-b border-outline-variant pb-2">
+<div class="font-mono-label text-mono-label text-outline bg-surface-container-highest px-1.5 rounded">Stage B</div>
+<div class="font-mono-label text-mono-label text-on-surface uppercase">Fuzzy</div>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data">
+<span class="text-on-surface-variant">Input:</span>
+<span class="text-on-surface">420,500</span>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data">
+<span class="text-on-surface-variant">Output:</span>
+<span class="text-primary font-bold">185,200</span>
+</div>
+<div class="mt-auto pt-2 text-[10px] font-mono-label text-outline">Levenshtein &amp; N-gram similarity &gt; 0.85</div>
+<span class="material-symbols-outlined absolute -right-5 top-1/2 -translate-y-1/2 text-outline-variant z-10 bg-background text-[16px]">chevron_right</span>
+</div>
+<!-- Stage C -->
+<div class="funnel-card shrink-0 w-64 bg-surface border border-outline-variant rounded p-3 flex flex-col gap-3 mr-6 relative snap-start">
+<div class="flex justify-between items-center border-b border-outline-variant pb-2">
+<div class="font-mono-label text-mono-label text-outline bg-surface-container-highest px-1.5 rounded">Stage C</div>
+<div class="font-mono-label text-mono-label text-on-surface uppercase">Semantic</div>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data">
+<span class="text-on-surface-variant">Input:</span>
+<span class="text-on-surface">185,200</span>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data">
+<span class="text-on-surface-variant">Output:</span>
+<span class="text-primary font-bold">42,100</span>
+</div>
+<div class="mt-auto pt-2 text-[10px] font-mono-label text-outline">Vector search cosine sim &gt; 0.92</div>
+<span class="material-symbols-outlined absolute -right-5 top-1/2 -translate-y-1/2 text-outline-variant z-10 bg-background text-[16px]">chevron_right</span>
+</div>
+<!-- Stage D: PROMINENT -->
+<div class="funnel-card shrink-0 w-72 bg-surface-container-low border-2 border-primary rounded p-4 flex flex-col gap-3 mr-6 relative snap-start shadow-[0_0_15px_rgba(78,222,163,0.1)]">
+<div class="flex justify-between items-center border-b border-outline pb-2">
+<div class="font-mono-label text-mono-label text-on-primary-container bg-primary-container px-2 py-0.5 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">star</span> Stage D
+                                </div>
+<div class="font-mono-label text-mono-label text-primary font-bold uppercase">Evidence Scoring</div>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data">
+<span class="text-on-surface-variant">Input Candidates:</span>
+<span class="text-on-surface">42,100</span>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data bg-surface px-2 py-1 border border-outline-variant mt-1">
+<span class="text-on-surface-variant">Qualified Output:</span>
+<span class="text-primary font-bold text-[14px]">8,450</span>
+</div>
+<div class="flex gap-2 mt-1">
+<div class="flex-1 h-1 bg-surface border border-outline-variant"><div class="h-full bg-primary w-[20%]"></div></div>
+<span class="text-[9px] font-mono-label text-outline-variant whitespace-nowrap">20% Pass Rate</span>
+</div>
+<div class="mt-auto pt-2 text-[10px] font-mono-label text-primary-fixed-dim">Multi-factor heuristic scoring active.</div>
+<span class="material-symbols-outlined absolute -right-5 top-1/2 -translate-y-1/2 text-primary z-10 bg-background text-[16px]">double_arrow</span>
+</div>
+<!-- Stage E -->
+<div class="funnel-card shrink-0 w-64 bg-surface border border-outline-variant rounded p-3 flex flex-col gap-2 mr-6 relative snap-start">
+<div class="flex justify-between items-center border-b border-outline-variant pb-2 mb-1">
+<div class="font-mono-label text-mono-label text-outline bg-surface-container-highest px-1.5 rounded">Stage E</div>
+<div class="font-mono-label text-mono-label text-on-surface uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span> Bounded LLM
+                                </div>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data">
+<span class="text-on-surface-variant">Evaluated:</span>
+<span class="text-primary">8,450</span>
+</div>
+<div class="grid grid-cols-2 gap-1 mt-2 border-t border-outline-variant pt-2">
+<div>
+<div class="text-[9px] font-mono-label text-outline uppercase">Tokens</div>
+<div class="font-mono-data text-mono-data text-on-surface">1.24M</div>
+</div>
+<div>
+<div class="text-[9px] font-mono-label text-outline uppercase">Cost</div>
+<div class="font-mono-data text-mono-data text-error-container bg-error/10 px-1 w-fit rounded border border-error/20">$4.15</div>
+</div>
+<div class="col-span-2 mt-1">
+<div class="text-[9px] font-mono-label text-outline uppercase">Avg Delta (Latency)</div>
+<div class="font-mono-data text-mono-data text-on-surface flex items-center gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-primary-container"></div> 340ms / record
+                                    </div>
+</div>
+</div>
+<span class="material-symbols-outlined absolute -right-5 top-1/2 -translate-y-1/2 text-outline-variant z-10 bg-background text-[16px]">chevron_right</span>
+</div>
+<!-- Stage F -->
+<div class="funnel-card shrink-0 w-64 bg-surface border border-outline-variant rounded p-3 flex flex-col gap-3 snap-start relative overflow-hidden">
+<!-- Subtle highlight background for final stage -->
+<div class="absolute inset-0 bg-gradient-to-br from-surface to-surface-container-highest opacity-50 z-0 pointer-events-none"></div>
+<div class="relative z-10 flex flex-col h-full">
+<div class="flex justify-between items-center border-b border-outline-variant pb-2">
+<div class="font-mono-label text-mono-label text-outline bg-surface-container-highest px-1.5 rounded">Stage F</div>
+<div class="font-mono-label text-mono-label text-on-surface uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">account_balance</span> Financial Verif.
+                                    </div>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data mt-2">
+<span class="text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">verified</span> Surviving:</span>
+<span class="text-primary font-bold">8,408</span>
+</div>
+<div class="flex justify-between items-center font-mono-data text-mono-data">
+<span class="text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-error">gpp_bad</span> Rejected:</span>
+<span class="text-error font-bold">42</span>
+</div>
+<div class="mt-auto pt-3">
+<button class="w-full bg-surface-variant hover:bg-surface-bright border border-outline-variant text-on-surface font-mono-label text-mono-label py-1 rounded transition-colors">View Rejections</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- HIGH DENSITY LEDGER DATA GRID (Supporting context) -->
+<section class="flex-1 flex flex-col border border-outline-variant rounded overflow-hidden min-h-[300px] bg-surface">
+<div class="bg-surface-container-highest border-b border-outline-variant px-3 py-2 flex justify-between items-center shrink-0">
+<div class="font-mono-label text-mono-label text-on-surface uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">list_alt</span>
+                            Surviving Ledger Candidates (Sample)
+                        </div>
+<div class="flex gap-2">
+<button class="text-on-surface-variant hover:text-on-surface border border-outline-variant px-2 py-0.5 rounded font-mono-label text-mono-label flex items-center gap-1 bg-surface">
+<span class="material-symbols-outlined text-[14px]">download</span> Export
+                            </button>
+</div>
+</div>
+<div class="overflow-auto flex-1 bg-background">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface z-10 border-b border-outline-variant">
+<tr>
+<th class="font-mono-label text-mono-label text-outline px-3 py-2 border-r border-outline-variant w-12 text-center">#</th>
+<th class="font-mono-label text-mono-label text-outline px-3 py-2 border-r border-outline-variant">TxID (Source A)</th>
+<th class="font-mono-label text-mono-label text-outline px-3 py-2 border-r border-outline-variant">TxID (Source B)</th>
+<th class="font-mono-label text-mono-label text-outline px-3 py-2 border-r border-outline-variant text-right">Amount</th>
+<th class="font-mono-label text-mono-label text-outline px-3 py-2 border-r border-outline-variant text-center">Evid. Score</th>
+<th class="font-mono-label text-mono-label text-outline px-3 py-2">LLM Rationale snippet</th>
+</tr>
+</thead>
+<tbody class="font-mono-data text-mono-data">
+<!-- Row 1 -->
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors group">
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface-variant text-center">1</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">SRC-A-90123</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">SYS-B-8812A</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface text-right">$45,210.00</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-primary text-center">0.992</td>
+<td class="px-3 py-1.5 text-on-surface-variant truncate max-w-[200px] group-hover:text-on-surface">"Entities match exactly. Semantic context aligns on date..."</td>
+</tr>
+<!-- Row 2 - Zebra -->
+<tr class="bg-surface border-b border-outline-variant hover:bg-surface-container-low transition-colors group">
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface-variant text-center">2</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">SRC-A-90124</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">SYS-B-8812B</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface text-right">$1,050.50</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-primary text-center">0.985</td>
+<td class="px-3 py-1.5 text-on-surface-variant truncate max-w-[200px] group-hover:text-on-surface">"Fuzzy match on descriptor 'ACME Corp'. Amounts equal."</td>
+</tr>
+<!-- Row 3 -->
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors group">
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface-variant text-center">3</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">SRC-A-90127</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">SYS-B-8812F</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface text-right">$12.99</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-tertiary-fixed-dim text-center">0.910</td>
+<td class="px-3 py-1.5 text-on-surface-variant truncate max-w-[200px] group-hover:text-on-surface">"Timestamp delta 45s. Acceptable within drift params."</td>
+</tr>
+<!-- Row 4 - Zebra -->
+<tr class="bg-surface border-b border-outline-variant hover:bg-surface-container-low transition-colors group">
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface-variant text-center">4</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">SRC-A-90130</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">SYS-B-8813C</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-on-surface text-right">$500,000.00</td>
+<td class="px-3 py-1.5 border-r border-outline-variant text-primary text-center">0.999</td>
+<td class="px-3 py-1.5 text-on-surface-variant truncate max-w-[200px] group-hover:text-on-surface">"High confidence ledger alignment. Block hash verified."</td>
+</tr>
+<!-- Add empty rows to fill space for "high density" feel -->
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors"><td class="px-3 py-1.5 border-r border-outline-variant text-on-surface-variant text-center">5</td><td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">...</td><td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">...</td><td class="px-3 py-1.5 border-r border-outline-variant text-on-surface text-right">...</td><td class="px-3 py-1.5 border-r border-outline-variant text-primary text-center">...</td><td class="px-3 py-1.5 text-on-surface-variant">...</td></tr>
+<tr class="bg-surface border-b border-outline-variant hover:bg-surface-container-low transition-colors"><td class="px-3 py-1.5 border-r border-outline-variant text-on-surface-variant text-center">6</td><td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">...</td><td class="px-3 py-1.5 border-r border-outline-variant text-on-surface">...</td><td class="px-3 py-1.5 border-r border-outline-variant text-on-surface text-right">...</td><td class="px-3 py-1.5 border-r border-outline-variant text-primary text-center">...</td><td class="px-3 py-1.5 text-on-surface-variant">...</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Bottom spacing -->
+<div class="h-4 shrink-0"></div>
+</main>
+</div>
+</div>
+</body></html>

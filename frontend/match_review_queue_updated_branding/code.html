@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RazorLedger - Review Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "inverse-primary": "#006c49",
+                        "tertiary-fixed": "#d8e3fb",
+                        "on-tertiary-container": "#2e394c",
+                        "outline-variant": "#3c4a42",
+                        "surface-variant": "#273647",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary-fixed-variant": "#005236",
+                        "on-surface": "#d4e4fa",
+                        "on-secondary": "#213145",
+                        "inverse-on-surface": "#233143",
+                        "on-primary-container": "#00422b",
+                        "on-tertiary-fixed-variant": "#3c475a",
+                        "surface": "#051424",
+                        "outline": "#86948a",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-fixed": "#002113",
+                        "tertiary-fixed-dim": "#bcc7de",
+                        "on-secondary-container": "#a9bad3",
+                        "tertiary-container": "#98a3ba",
+                        "on-background": "#d4e4fa",
+                        "primary-container": "#10b981",
+                        "surface-container-lowest": "#010f1f",
+                        "surface-container-high": "#1c2b3c",
+                        "secondary-container": "#3a4a5f",
+                        "surface-container-highest": "#273647",
+                        "on-tertiary": "#263143",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed": "#111c2d",
+                        "surface-tint": "#4edea3",
+                        "inverse-surface": "#d4e4fa",
+                        "on-error-container": "#ffdad6",
+                        "on-surface-variant": "#bbcabf",
+                        "primary": "#4edea3",
+                        "on-secondary-fixed": "#0b1c30",
+                        "tertiary": "#bcc7de",
+                        "on-primary": "#003824",
+                        "surface-bright": "#2c3a4c",
+                        "secondary": "#b7c8e1",
+                        "surface-dim": "#051424",
+                        "surface-container": "#122131",
+                        "primary-fixed-dim": "#4edea3",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-low": "#0d1c2d",
+                        "background": "#051424",
+                        "primary-fixed": "#6ffbbe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin": "16px",
+                        "unit": "4px",
+                        "gutter": "12px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "mono-label": ["JetBrains Mono"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "mono-data": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "mono-label": ["10px", { "lineHeight": "12px", "fontWeight": "700" }],
+                        "display-lg": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "mono-data": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #051424;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #273647;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #3c4a42;
+        }
+        .zebra-row:nth-child(even) {
+            background-color: #051424;
+        }
+        .zebra-row:nth-child(odd) {
+            background-color: #1c2b3c;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-sm h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-64 border-r border-outline-variant bg-surface-container-low flex flex-col p-4 gap-2 z-20 hidden md:flex">
+<!-- Header -->
+<div class="mb-6 flex flex-col gap-1">
+<img alt="RazorLedger Logo" class="h-8 w-8 mb-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVKce6mVyXS3ygRTLNBk8ytHI9_9zW4x1Is_TBD9k6E0lfXd4jKzpjZZ9hPbB3D2MeBD-UIMof6mJVJ9pvBtS2vDlXo0zGW4msa2NmIpxkZOTZoGvxHQftnMKC_t2qPbNUMZ9tGuDin4XglrgoNUgy6BpqGBuwikd0mPh7GZ6jEmTGIifbvV2fanRqKe6h4NxnPJ7prr4jF1DoaZm4frdWnj7ayBtC2EmN8ydDLkNrJe-VY2pZ1Npn"/><h1 class="font-headline-md text-headline-md text-primary tracking-tighter font-bold">RazorLedger</h1>
+</div>
+<!-- Links -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-mono-label text-mono-label">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container font-bold rounded-lg opacity-80 scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rule_folder</span>
+<span class="font-mono-label text-mono-label">Review Queue</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">history_edu</span>
+<span class="font-mono-label text-mono-label">Audit Trail</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">verified_user</span>
+<span class="font-mono-label text-mono-label">Controls &amp; Safety</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">query_stats</span>
+<span class="font-mono-label text-mono-label">Model Performance</span>
+</a>
+<!-- Spacer -->
+<div class="flex-grow"></div>
+<!-- CTA & Footer -->
+<button class="w-full bg-primary text-on-primary font-mono-label text-mono-label py-2 rounded mb-4 font-bold uppercase tracking-wider hover:bg-primary-fixed transition-colors">
+            Force Sync Ledger
+        </button>
+<div class="flex flex-col gap-1 border-t border-outline-variant pt-4">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[16px]">monitor_heart</span>
+<span class="font-mono-label text-mono-label">System Health</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span class="font-mono-label text-mono-label">API Docs</span>
+</a>
+<div class="flex items-center gap-3 mt-4 px-2">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<div class="w-full h-full rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-[18px]">account_circle</span></div>
+</div>
+<div class="flex flex-col">
+<span class="font-mono-label text-mono-label text-on-surface">Auditor A.</span>
+<span class="font-mono-label text-[8px] text-on-surface-variant uppercase">Admin</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-64 relative min-w-0">
+<!-- TopNavBar (Mobile only context based on rules, but keeping a header area for structure) -->
+<header class="flex justify-between items-center w-full px-margin h-16 border-b border-outline-variant bg-surface md:hidden shrink-0 z-10">
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tighter">RazorLedger</h1>
+<div class="flex items-center gap-4 text-primary"><img alt="RazorLedger Logo" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVKce6mVyXS3ygRTLNBk8ytHI9_9zW4x1Is_TBD9k6E0lfXd4jKzpjZZ9hPbB3D2MeBD-UIMof6mJVJ9pvBtS2vDlXo0zGW4msa2NmIpxkZOTZoGvxHQftnMKC_t2qPbNUMZ9tGuDin4XglrgoNUgy6BpqGBuwikd0mPh7GZ6jEmTGIifbvV2fanRqKe6h4NxnPJ7prr4jF1DoaZm4frdWnj7ayBtC2EmN8ydDLkNrJe-VY2pZ1Npn"/></div>
+</header>
+<header class="hidden md:flex justify-between items-center w-full px-margin h-16 border-b border-outline-variant bg-surface shrink-0 z-10">
+<div class="flex items-center gap-4">
+<h2 class="font-headline-md text-headline-md text-on-surface">Review Queue</h2>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-mono-label text-mono-label rounded border border-outline-variant">142 PENDING</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="bg-[#020617] border border-outline-variant text-on-surface font-mono-data text-mono-data pl-8 pr-3 py-1.5 rounded w-64 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-on-surface-variant transition-all" placeholder="Search Source ID, Candidate..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary font-mono-label text-mono-label py-1.5 px-4 rounded font-bold uppercase hover:bg-primary-fixed transition-colors">
+                    Execute Ledger Commit
+                </button>
+</div>
+</header>
+<!-- View Layout -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Ledger Grid -->
+<main class="flex-1 flex flex-col bg-surface min-w-0 overflow-hidden relative border-r border-outline-variant z-0">
+<!-- Filters / Toolbar -->
+<div class="h-12 border-b border-outline-variant bg-surface-container-low flex items-center px-gutter shrink-0 gap-2 overflow-x-auto custom-scrollbar">
+<button class="flex items-center gap-1 px-2 py-1 rounded bg-surface-variant border border-outline-variant text-on-surface hover:bg-surface-bright transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[14px]">filter_list</span>
+<span class="font-mono-label text-mono-label uppercase">Risk &gt; 80</span>
+</button>
+<button class="flex items-center gap-1 px-2 py-1 rounded border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[14px]">sort</span>
+<span class="font-mono-label text-mono-label uppercase">Sort: Amount (Desc)</span>
+</button>
+<button class="flex items-center gap-1 px-2 py-1 rounded border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors whitespace-nowrap">
+<span class="font-mono-label text-mono-label uppercase">Type: Bank</span>
+</button>
+</div>
+<!-- Table Container -->
+<div class="flex-1 overflow-auto custom-scrollbar bg-[#0F172A]">
+<div class="min-w-[1000px] w-full grid grid-cols-[1fr_100px_120px_1fr_100px_150px_120px_80px] font-mono-data text-mono-data">
+<!-- Header Row -->
+<div class="contents">
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-2 sticky top-0 z-10 font-mono-label text-mono-label uppercase border-b border-r border-outline-variant">Source ID</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-2 sticky top-0 z-10 font-mono-label text-mono-label uppercase border-b border-r border-outline-variant">Type</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-2 sticky top-0 z-10 font-mono-label text-mono-label uppercase border-b border-r border-outline-variant text-right">Amount</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-2 sticky top-0 z-10 font-mono-label text-mono-label uppercase border-b border-r border-outline-variant">Candidate</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-2 sticky top-0 z-10 font-mono-label text-mono-label uppercase border-b border-r border-outline-variant text-right">Confidence</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-2 sticky top-0 z-10 font-mono-label text-mono-label uppercase border-b border-r border-outline-variant">Primary Reason</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-2 sticky top-0 z-10 font-mono-label text-mono-label uppercase border-b border-r border-outline-variant">Control Fail</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-2 sticky top-0 z-10 font-mono-label text-mono-label uppercase border-b border-outline-variant text-right">Risk</div>
+</div>
+<!-- Data Rows -->
+<!-- Row 1 (Active) -->
+<div class="contents cursor-pointer group">
+<div class="bg-surface-bright px-3 py-2 border-b border-r border-outline-variant group-hover:bg-surface-bright/80 transition-colors flex items-center text-primary">
+                                TRM-992-81A-B
+                            </div>
+<div class="bg-surface-bright px-3 py-2 border-b border-r border-outline-variant flex items-center">
+<span class="bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded text-[10px] font-bold">BANK</span>
+</div>
+<div class="bg-surface-bright px-3 py-2 border-b border-r border-outline-variant flex items-center justify-end text-on-surface">
+                                $124,500.00
+                            </div>
+<div class="bg-surface-bright px-3 py-2 border-b border-r border-outline-variant flex items-center text-on-surface-variant truncate">
+                                Stripe_Payout_Q3
+                            </div>
+<div class="bg-surface-bright px-3 py-2 border-b border-r border-outline-variant flex items-center justify-end">
+<span class="text-error">42%</span>
+</div>
+<div class="bg-surface-bright px-3 py-2 border-b border-r border-outline-variant flex items-center truncate text-on-surface-variant text-[11px]">
+                                Amount Mismatch
+                            </div>
+<div class="bg-surface-bright px-3 py-2 border-b border-r border-outline-variant flex items-center">
+<div class="bg-error/15 border-l border-error text-error px-1.5 py-0.5 text-[10px] uppercase font-bold w-full text-center">CTRL-04A</div>
+</div>
+<div class="bg-surface-bright px-3 py-2 border-b border-outline-variant flex items-center justify-end font-bold text-error">
+                                94
+                            </div>
+</div>
+<!-- Row 2 -->
+<div class="contents cursor-pointer group zebra-row">
+<div class="px-3 py-2 border-b border-r border-outline-variant group-hover:bg-[#334155]/30 transition-colors flex items-center text-on-surface">
+                                INV-2024-X9
+                            </div>
+<div class="px-3 py-2 border-b border-r border-outline-variant group-hover:bg-[#334155]/30 transition-colors flex items-center">
+<span class="bg-surface-variant text-on-surface-variant px-1.5 py-0.5 rounded text-[10px] font-bold">INVOICE</span>
+</div>
+<div class="px-3 py-2 border-b border-r border-outline-variant group-hover:bg-[#334155]/30 transition-colors flex items-center justify-end text-on-surface">
+                                $8,240.50
+                            </div>
+<div class="px-3 py-2 border-b border-r border-outline-variant group-hover:bg-[#334155]/30 transition-colors flex items-center text-on-surface-variant truncate">
+                                VENDOR_ACME_09
+                            </div>
+<div class="px-3 py-2 border-b border-r border-outline-variant group-hover:bg-[#334155]/30 transition-colors flex items-center justify-end">
+<span class="text-[#facc15]">78%</span>
+</div>
+<div class="px-3 py-2 border-b border-r border-outline-variant group-hover:bg-[#334155]/30 transition-colors flex items-center truncate text-on-surface-variant text-[11px]">
+                                Fuzzy Name Match
+                            </div>
+<div class="px-3 py-2 border-b border-r border-outline-variant group-hover:bg-[#334155]/30 transition-colors flex items-center">
+<div class="bg-[#facc15]/15 border-l border-[#facc15] text-[#facc15] px-1.5 py-0.5 text-[10px] uppercase font-bold w-full text-center">CTRL-09B</div>
+</div>
+<div class="px-3 py-2 border-b border-outline-variant group-hover:bg-[#334155]/30 transition-colors flex items-center justify-end font-bold text-[#facc15]">
+                                62
+                            </div>
+</div>
+</div>
+</div>
+</main>
+<!-- Detail Panel (Side) -->
+<aside class="w-[400px] bg-surface flex flex-col shrink-0 overflow-y-auto custom-scrollbar border-l border-outline-variant shadow-[-8px_0_16px_rgba(0,0,0,0.5)] z-10 hidden xl:flex">
+<!-- Panel Header -->
+<div class="p-gutter border-b border-outline-variant bg-surface-container-high flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase">Review Task</span>
+<span class="bg-error/15 text-error px-1.5 py-0.5 rounded text-[10px] font-bold border border-error/30">HIGH RISK</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface break-all">TRM-992-81A-B</h3>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Panel Content -->
+<div class="p-gutter flex flex-col gap-6 flex-1">
+<!-- Source Details vs Candidate -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-[#020617] border border-outline-variant rounded p-3 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="font-mono-label text-mono-label text-on-surface-variant mb-2">SOURCE: BANK</div>
+<div class="font-mono-data text-mono-data text-on-surface mb-1 truncate" title="Bank of America">Bank of America</div>
+<div class="font-mono-data text-[14px] text-on-surface font-bold mb-1">$124,500.00</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant">2023-10-24 14:32Z</div>
+</div>
+<div class="bg-[#020617] border border-outline-variant rounded p-3 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary"></div>
+<div class="font-mono-label text-mono-label text-on-surface-variant mb-2">CANDIDATE: GATEWAY</div>
+<div class="font-mono-data text-mono-data text-on-surface mb-1 truncate" title="Stripe_Payout_Q3">Stripe_Payout_Q3</div>
+<div class="font-mono-data text-[14px] text-error font-bold mb-1">$124,550.00</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant">2023-10-24 14:35Z</div>
+</div>
+</div>
+<!-- Evidence Progression -->
+<div>
+<h4 class="font-mono-label text-mono-label text-on-surface mb-3 border-b border-outline-variant pb-1">Evidence Progression</h4>
+<div class="relative pl-6 space-y-4 before:absolute before:inset-y-0 before:left-[11px] before:w-[2px] before:bg-outline-variant">
+<!-- Step 1 -->
+<div class="relative">
+<div class="absolute left-[-24px] w-4 h-4 rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center z-10 top-0.5">
+<div class="w-1.5 h-1.5 rounded-full bg-error"></div>
+</div>
+<div class="font-mono-label text-mono-label text-on-surface-variant uppercase mb-1 flex justify-between">
+<span>Deterministic Match</span>
+<span class="text-error">FAIL</span>
+</div>
+<div class="font-mono-data text-[11px] text-on-surface-variant bg-[#020617] p-2 rounded border border-outline-variant">
+                                    Amount delta: $50.00 (Exceeds $0.00 tolerance)
+                                </div>
+</div>
+<!-- Step 2 -->
+<div class="relative">
+<div class="absolute left-[-24px] w-4 h-4 rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center z-10 top-0.5">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+</div>
+<div class="font-mono-label text-mono-label text-on-surface-variant uppercase mb-1 flex justify-between">
+<span>Fuzzy Semantic (LLM)</span>
+<span class="text-primary">PASS</span>
+</div>
+<div class="font-mono-data text-[11px] text-on-surface-variant bg-[#020617] p-2 rounded border border-outline-variant">
+                                    High confidence semantic match between "Stripe_Payout" and Bank entity.
+                                </div>
+</div>
+<!-- Step 3 -->
+<div class="relative">
+<div class="absolute left-[-24px] w-4 h-4 rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center z-10 top-0.5">
+<div class="w-1.5 h-1.5 rounded-full bg-error"></div>
+</div>
+<div class="font-mono-label text-mono-label text-on-surface-variant uppercase mb-1 flex justify-between">
+<span>Final Score Risk</span>
+<span class="text-error">94/100</span>
+</div>
+<div class="font-mono-data text-[11px] text-error bg-error/10 p-2 rounded border border-error/30">
+                                    CTRL-04A: Unexplained fee structure variance detected. Manual review mandated.
+                                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Panel Actions -->
+<div class="p-gutter border-t border-outline-variant bg-surface-container-high flex gap-2 shrink-0">
+<button class="flex-1 bg-surface-variant hover:bg-[#334155] text-on-surface border border-outline-variant font-mono-label text-mono-label py-2 rounded transition-colors uppercase font-bold text-center">
+                        Resolve Candidate
+                    </button>
+<button class="w-12 bg-surface-variant hover:bg-[#334155] text-error border border-error/30 font-mono-label text-mono-label py-2 rounded transition-colors flex items-center justify-center" title="Reject">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<button class="w-12 bg-primary text-on-primary border border-primary font-mono-label text-mono-label py-2 rounded transition-colors flex items-center justify-center hover:bg-primary-fixed" title="Approve">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</button>
+</div>
+</aside>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+<!-- STITCH_THREEJS_START:ANIMATION_12 class="fixed inset-0 w-full h-full bg-transparent" -->
+<div class="fixed inset-0 w-full h-full bg-transparent" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_12" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_12');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  const width = container.clientWidth || window.innerWidth;
+const height = container.clientHeight || window.innerHeight;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+camera.position.z = 5;
+
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+renderer.setSize(width, height);
+renderer.setPixelRatio(window.devicePixelRatio);
+container.appendChild(renderer.domElement);
+
+// Create the "Reconciliation Funnel" as a series of 3D geometric rings
+const rings = [];
+const ringCount = 6;
+const colors = [
+    0x67a590, // Stage A
+    0x67a590, // Stage B
+    0x34d399, // Stage C (Semantic)
+    0x34d399, // Stage D (Scoring)
+    0x60a5fa, // Stage E (LLM)
+    0x10b981  // Stage F (Verifier)
+];
+
+for (let i = 0; i < ringCount; i++) {
+    const radius = 2.0 - (i * 0.25);
+    const geometry = new THREE.TorusGeometry(radius, 0.01, 16, 100);
+    const material = new THREE.MeshBasicMaterial({ 
+        color: colors[i], 
+        transparent: true, 
+        opacity: 0.3 + (i * 0.1) 
+    });
+    const ring = new THREE.Mesh(geometry, material);
+    ring.position.z = -i * 0.5;
+    scene.add(ring);
+    rings.push(ring);
+}
+
+// Particle system for "Money River"
+const particleCount = 200;
+const particleGeometry = new THREE.BufferGeometry();
+const positions = new Float32Array(particleCount * 3);
+const velocities = new Float32Array(particleCount);
+
+for (let i = 0; i < particleCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 10;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 5;
+    positions[i * 3 + 2] = -5 - Math.random() * 5;
+    velocities[i] = 0.02 + Math.random() * 0.05;
+}
+
+particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+const particleMaterial = new THREE.PointsMaterial({ 
+    color: 0x67a590, 
+    size: 0.02, 
+    transparent: true, 
+    opacity: 0.5 
+});
+const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+scene.add(particleSystem);
+
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // Animate rings
+    rings.forEach((ring, i) => {
+        ring.rotation.z += 0.005 * (i + 1);
+        ring.position.z = Math.sin(Date.now() * 0.001 + i) * 0.1 - (i * 0.5);
+    });
+    
+    // Animate particles flowing through the funnel
+    const pos = particleSystem.geometry.attributes.position.array;
+    for (let i = 0; i < particleCount; i++) {
+        pos[i * 3 + 2] += velocities[i];
+        if (pos[i * 3 + 2] > 2) {
+            pos[i * 3 + 2] = -5;
+            pos[i * 3] = (Math.random() - 0.5) * 4;
+            pos[i * 3 + 1] = (Math.random() - 0.5) * 4;
+        }
+    }
+    particleSystem.geometry.attributes.position.needsUpdate = true;
+    
+    renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+});
+
+animate();
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_12 -->
+</body>
+</html>

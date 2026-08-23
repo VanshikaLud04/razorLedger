@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RazorLedger Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "inverse-primary": "#006c49",
+                        "tertiary-fixed": "#d8e3fb",
+                        "on-tertiary-container": "#2e394c",
+                        "outline-variant": "#3c4a42",
+                        "surface-variant": "#273647",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary-fixed-variant": "#005236",
+                        "on-surface": "#d4e4fa",
+                        "on-secondary": "#213145",
+                        "inverse-on-surface": "#233143",
+                        "on-primary-container": "#00422b",
+                        "on-tertiary-fixed-variant": "#3c475a",
+                        "surface": "#051424",
+                        "outline": "#86948a",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-fixed": "#002113",
+                        "tertiary-fixed-dim": "#bcc7de",
+                        "on-secondary-container": "#a9bad3",
+                        "tertiary-container": "#98a3ba",
+                        "on-background": "#d4e4fa",
+                        "primary-container": "#10b981",
+                        "surface-container-lowest": "#010f1f",
+                        "surface-container-high": "#1c2b3c",
+                        "secondary-container": "#3a4a5f",
+                        "surface-container-highest": "#273647",
+                        "on-tertiary": "#263143",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed": "#111c2d",
+                        "surface-tint": "#4edea3",
+                        "inverse-surface": "#d4e4fa",
+                        "on-error-container": "#ffdad6",
+                        "on-surface-variant": "#bbcabf",
+                        "primary": "#4edea3",
+                        "on-secondary-fixed": "#0b1c30",
+                        "tertiary": "#bcc7de",
+                        "on-primary": "#003824",
+                        "surface-bright": "#2c3a4c",
+                        "secondary": "#b7c8e1",
+                        "surface-dim": "#051424",
+                        "surface-container": "#122131",
+                        "primary-fixed-dim": "#4edea3",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-low": "#0d1c2d",
+                        "background": "#051424",
+                        "primary-fixed": "#6ffbbe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin": "16px",
+                        "unit": "4px",
+                        "gutter": "12px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "mono-label": ["JetBrains Mono"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "mono-data": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "mono-label": ["10px", { "lineHeight": "12px", "fontWeight": "700" }],
+                        "display-lg": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "mono-data": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #0F172A; } /* Level 0 */
+        .glass-panel {
+            background-color: #1E293B; /* Level 1 */
+            border: 1px solid #334155;
+        }
+        .zebra-row:nth-child(even) { background-color: #0F172A; }
+        .zebra-row:nth-child(odd) { background-color: #1E293B; }
+        .zebra-row:hover { background-color: rgba(51, 65, 85, 0.5); }
+    </style>
+</head>
+<body class="text-on-background font-body-sm antialiased h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-64 bg-surface-container-low border-r border-outline-variant flex flex-col p-4 gap-2 z-50">
+<div class="mb-6 flex items-center gap-3">
+<img alt="RazorLedger Logo" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVKce6mVyXS3ygRTLNBk8ytHI9_9zW4x1Is_TBD9k6E0lfXd4jKzpjZZ9hPbB3D2MeBD-UIMof6mJVJ9pvBtS2vDlXo0zGW4msa2NmIpxkZOTZoGvxHQftnMKC_t2qPbNUMZ9tGuDin4XglrgoNUgy6BpqGBuwikd0mPh7GZ6jEmTGIifbvV2fanRqKe6h4NxnPJ7prr4jF1DoaZm4frdWnj7ayBtC2EmN8ydDLkNrJe-VY2pZ1Npn"/>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tighter font-bold">RazorLedger</h1>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container font-bold rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-mono-label text-mono-label">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">rule_folder</span>
+<span class="font-mono-label text-mono-label">Review Queue</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-mono-label text-mono-label">Audit Trail</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-mono-label text-mono-label">Controls &amp; Safety</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-mono-label text-mono-label">Model Performance</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-2 pt-4 border-t border-outline-variant">
+<button class="w-full py-2 bg-primary text-on-primary font-mono-label text-mono-label font-bold rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+                Force Sync Ledger
+            </button>
+<div class="flex flex-col gap-1 mt-2">
+<a class="flex items-center gap-3 px-3 py-1.5 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[16px]">monitor_heart</span>
+<span class="font-mono-label text-mono-label">System Health</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span class="font-mono-label text-mono-label">API Docs</span>
+</a>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 mt-2 bg-surface-variant/50 rounded border border-outline-variant/30">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A highly detailed close-up portrait of a professional system auditor in a dimly lit, high-tech control room setting. Cool blue monitor glows reflect off their glasses. Cyber-security aesthetic, sharp focus, technical atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT36bhX9pZp9moI5p0mnrV60nm4TkT8dsvR-irol6JROfhdq5XQKtHztRhUClScXhwzNX1Mign9a11AyDuRVdHUv_x9XAhxYUhXy5fzgaYUFq6kHrJgwjbR-CvmDueim2QmbkUeDjzUWsQ8A-E2S8jLLv1q3KUeUYlgtkKthWgsOeQKMLNsttkYoIfhenDm_vlT6y4pEBQ4nCYrB6cVy59tPaSW6VBBALekDM9XmXM3VODtapoU8fR"/>
+<div class="flex flex-col">
+<span class="font-mono-label text-mono-label text-on-surface">System Auditor Profile</span>
+<span class="font-mono-label text-mono-label text-on-surface-variant/70 text-[8px]">ID: AUD-8992</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col h-full overflow-hidden">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-margin h-16 bg-surface border-b border-outline-variant shrink-0 z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-[#020617] border border-outline-variant rounded-md py-1.5 pl-9 pr-3 text-mono-data font-mono-data text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search Run ID, Hash, or Rule..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2 text-on-surface-variant">
+<button class="hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">notifications_active</span></button>
+<button class="hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">settings</span></button>
+<button class="hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+<button class="bg-surface-variant border border-outline-variant text-on-surface font-mono-label text-mono-label px-3 py-1.5 rounded hover:border-primary hover:text-primary transition-colors">
+                    Execute Ledger Commit
+                </button>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 overflow-y-auto p-margin bg-[#0F172A]">
+<div class="max-w-[1440px] mx-auto flex flex-col gap-6">
+<!-- Hero Safety Metric -->
+<section class="glass-panel rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 100% 0%, #10b981 0%, transparent 50%);"></div>
+<div class="flex flex-col gap-1 z-10">
+<h2 class="font-mono-label text-mono-label text-on-surface-variant uppercase tracking-widest">Core Integrity Guardrail</h2>
+<div class="font-display-lg text-display-lg text-primary flex items-center gap-3">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                            False Auto-Match: 0.0%
+                        </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 max-w-xl">System is operating within critical safety margins. Zero deterministic reconciliation failures detected in current ledger epoch.</p>
+</div>
+<div class="flex gap-4 z-10">
+<div class="bg-[#020617] border border-outline-variant rounded p-3 text-center min-w-[120px]">
+<div class="font-mono-label text-mono-label text-on-surface-variant mb-1">System Health</div>
+<div class="font-mono-data text-mono-data text-primary">OPTIMAL</div>
+</div>
+<div class="bg-[#020617] border border-outline-variant rounded p-3 text-center min-w-[120px]">
+<div class="font-mono-label text-mono-label text-on-surface-variant mb-1">Last Run</div>
+<div class="font-mono-data text-mono-data text-on-surface">2m ago</div>
+</div>
+</div>
+</section>
+<!-- Stats Grid (Bento) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Volume Container -->
+<div class="glass-panel rounded-lg p-4 flex flex-col gap-3">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">database</span>
+<span class="font-mono-label text-mono-label uppercase">Total Source Records</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface">1,492,031</div>
+<div class="flex justify-between items-end mt-auto pt-2 border-t border-outline-variant/50">
+<span class="font-mono-label text-mono-label text-on-surface-variant">Economic Events</span>
+<span class="font-mono-data text-mono-data text-on-surface">845,992</span>
+</div>
+</div>
+<!-- Match Metrics -->
+<div class="glass-panel rounded-lg p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase">MATCH</span>
+<span class="font-headline-md text-headline-md text-primary">1,420,119</span>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-mono-label bg-primary/10 text-primary border border-primary/20">95.1%</span>
+</div>
+<div class="w-full h-1 bg-[#020617] rounded-full mt-2 overflow-hidden">
+<div class="h-full bg-primary" style="width: 95.1%"></div>
+</div>
+<div class="flex justify-between items-end mt-auto pt-2">
+<span class="font-mono-label text-mono-label text-on-surface-variant">Safe Auto-Match %</span>
+<span class="font-mono-data text-mono-data text-primary">99.9%</span>
+</div>
+</div>
+<!-- Review Metrics -->
+<div class="glass-panel rounded-lg p-4 flex flex-col gap-3 border-l-2 border-l-[#eab308]">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase">REVIEW / PENDING</span>
+<span class="font-headline-md text-headline-md text-[#eab308]">68,401</span>
+</div>
+</div>
+<div class="flex justify-between font-mono-data text-mono-data mt-2">
+<span class="text-[#eab308]/70">REVIEW: 42,100</span>
+<span class="text-[#eab308]/70">PENDING: 26,301</span>
+</div>
+<div class="flex justify-between items-end mt-auto pt-2 border-t border-outline-variant/50">
+<span class="font-mono-label text-mono-label text-on-surface-variant">Review Burden %</span>
+<span class="font-mono-data text-mono-data text-[#eab308]">4.5%</span>
+</div>
+</div>
+<!-- Failure Metrics -->
+<div class="glass-panel rounded-lg p-4 flex flex-col gap-3 border-l-2 border-l-error">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<span class="font-mono-label text-mono-label text-error uppercase">NO_MATCH (FAILED)</span>
+<span class="font-headline-md text-headline-md text-error">3,511</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 leading-tight mt-1">Requires immediate manual intervention. Orphans detected.</p>
+<div class="mt-auto pt-2">
+<button class="w-full py-1.5 border border-error/50 text-error font-mono-label text-mono-label rounded hover:bg-error/10 transition-colors">
+                                Investigate Orphans
+                            </button>
+</div>
+</div>
+</section>
+<!-- Recent Runs Table -->
+<section class="glass-panel rounded-lg overflow-hidden flex flex-col">
+<div class="p-4 border-b border-[#334155] flex justify-between items-center bg-[#1E293B]">
+<h3 class="font-headline-md text-headline-md text-on-surface">Recent Reconciliation Runs</h3>
+<button class="flex items-center gap-1 text-primary font-mono-label text-mono-label hover:opacity-80 transition-opacity">
+                            View Full Audit Log
+                            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#0F172A] border-b border-[#334155]">
+<th class="py-2 px-3 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Run ID</th>
+<th class="py-2 px-3 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Partition</th>
+<th class="py-2 px-3 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Timestamp</th>
+<th class="py-2 px-3 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="py-2 px-3 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-right">Records</th>
+<th class="py-2 px-3 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-right">Match %</th>
+<th class="py-2 px-3 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-right">Review %</th>
+<th class="py-2 px-3 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-center">Safety Guard</th>
+</tr>
+</thead>
+<tbody class="font-mono-data text-mono-data text-on-surface">
+<tr class="zebra-row border-b border-[#334155]/50 transition-colors cursor-pointer group">
+<td class="py-2 px-3 text-primary group-hover:underline">RX-992-A</td>
+<td class="py-2 px-3">EU-WEST-1_PAYMENTS</td>
+<td class="py-2 px-3 text-on-surface-variant">2023-10-27T14:32:01Z</td>
+<td class="py-2 px-3">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-primary/10 border-l-2 border-primary text-primary">COMPLETED</span>
+</td>
+<td class="py-2 px-3 text-right">450,912</td>
+<td class="py-2 px-3 text-right">98.2%</td>
+<td class="py-2 px-3 text-right text-[#eab308]">1.8%</td>
+<td class="py-2 px-3 text-center">
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: 'FILL' 1;">shield</span>
+</td>
+</tr>
+<tr class="zebra-row border-b border-[#334155]/50 transition-colors cursor-pointer group">
+<td class="py-2 px-3 text-primary group-hover:underline">RX-991-B</td>
+<td class="py-2 px-3">US-EAST_CARDS</td>
+<td class="py-2 px-3 text-on-surface-variant">2023-10-27T14:15:22Z</td>
+<td class="py-2 px-3">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-[#eab308]/10 border-l-2 border-[#eab308] text-[#eab308]">REVIEW_REQ</span>
+</td>
+<td class="py-2 px-3 text-right">892,104</td>
+<td class="py-2 px-3 text-right">91.4%</td>
+<td class="py-2 px-3 text-right text-[#eab308]">8.2%</td>
+<td class="py-2 px-3 text-center">
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: 'FILL' 1;">shield</span>
+</td>
+</tr>
+<tr class="zebra-row border-b border-[#334155]/50 transition-colors cursor-pointer group">
+<td class="py-2 px-3 text-primary group-hover:underline">RX-990-A</td>
+<td class="py-2 px-3">APAC_SETTLEMENTS</td>
+<td class="py-2 px-3 text-on-surface-variant">2023-10-27T13:45:00Z</td>
+<td class="py-2 px-3">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-error/10 border-l-2 border-error text-error">HALTED</span>
+</td>
+<td class="py-2 px-3 text-right">149,015</td>
+<td class="py-2 px-3 text-right">85.0%</td>
+<td class="py-2 px-3 text-right text-[#eab308]">12.5%</td>
+<td class="py-2 px-3 text-center">
+<span class="material-symbols-outlined text-error text-[16px]" style="font-variation-settings: 'FILL' 1;">gpp_bad</span>
+</td>
+</tr>
+<tr class="zebra-row border-b border-[#334155]/50 transition-colors cursor-pointer group">
+<td class="py-2 px-3 text-primary group-hover:underline">RX-989-C</td>
+<td class="py-2 px-3">GLOBAL_FX</td>
+<td class="py-2 px-3 text-on-surface-variant">2023-10-27T12:00:05Z</td>
+<td class="py-2 px-3">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-primary/10 border-l-2 border-primary text-primary">COMPLETED</span>
+</td>
+<td class="py-2 px-3 text-right">3,450,119</td>
+<td class="py-2 px-3 text-right">99.1%</td>
+<td class="py-2 px-3 text-right text-[#eab308]">0.8%</td>
+<td class="py-2 px-3 text-center">
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: 'FILL' 1;">shield</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</div>
+</main>
+</body></html>

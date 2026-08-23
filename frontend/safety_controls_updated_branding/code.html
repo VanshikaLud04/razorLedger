@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RazorLedger - Controls &amp; Safety</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error": "#ffb4ab",
+                      "inverse-primary": "#006c49",
+                      "tertiary-fixed": "#d8e3fb",
+                      "on-tertiary-container": "#2e394c",
+                      "outline-variant": "#3c4a42",
+                      "surface-variant": "#273647",
+                      "on-error": "#690005",
+                      "secondary-fixed": "#d3e4fe",
+                      "on-primary-fixed-variant": "#005236",
+                      "on-surface": "#d4e4fa",
+                      "on-secondary": "#213145",
+                      "inverse-on-surface": "#233143",
+                      "on-primary-container": "#00422b",
+                      "on-tertiary-fixed-variant": "#3c475a",
+                      "surface": "#051424",
+                      "outline": "#86948a",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "on-primary-fixed": "#002113",
+                      "tertiary-fixed-dim": "#bcc7de",
+                      "on-secondary-container": "#a9bad3",
+                      "tertiary-container": "#98a3ba",
+                      "on-background": "#d4e4fa",
+                      "primary-container": "#10b981",
+                      "surface-container-lowest": "#010f1f",
+                      "surface-container-high": "#1c2b3c",
+                      "secondary-container": "#3a4a5f",
+                      "surface-container-highest": "#273647",
+                      "on-tertiary": "#263143",
+                      "error-container": "#93000a",
+                      "on-tertiary-fixed": "#111c2d",
+                      "surface-tint": "#4edea3",
+                      "inverse-surface": "#d4e4fa",
+                      "on-error-container": "#ffdad6",
+                      "on-surface-variant": "#bbcabf",
+                      "primary": "#4edea3",
+                      "on-secondary-fixed": "#0b1c30",
+                      "tertiary": "#bcc7de",
+                      "on-primary": "#003824",
+                      "surface-bright": "#2c3a4c",
+                      "secondary": "#b7c8e1",
+                      "surface-dim": "#051424",
+                      "surface-container": "#122131",
+                      "primary-fixed-dim": "#4edea3",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "surface-container-low": "#0d1c2d",
+                      "background": "#051424",
+                      "primary-fixed": "#6ffbbe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin": "16px",
+                      "unit": "4px",
+                      "gutter": "12px",
+                      "container-max": "1440px"
+              },
+              "fontFamily": {
+                      "mono-label": [
+                              "JetBrains Mono"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "mono-data": [
+                              "JetBrains Mono"
+                      ]
+              },
+              "fontSize": {
+                      "mono-label": [
+                              "10px",
+                              {
+                                      "lineHeight": "12px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "30px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "mono-data": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row overflow-x-hidden font-body-sm">
+<!-- Top Navigation (Mobile) -->
+<header class="md:hidden bg-surface dark:bg-surface border-b border-outline-variant flex justify-between items-center w-full px-margin h-16 sticky top-0 z-50"><div class="flex items-center gap-2"><img alt="RazorLedger Logo" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVKce6mVyXS3ygRTLNBk8ytHI9_9zW4x1Is_TBD9k6E0lfXd4jKzpjZZ9hPbB3D2MeBD-UIMof6mJVJ9pvBtS2vDlXo0zGW4msa2NmIpxkZOTZoGvxHQftnMKC_t2qPbNUMZ9tGuDin4XglrgoNUgy6BpqGBuwikd0mPh7GZ6jEmTGIifbvV2fanRqKe6h4NxnPJ7prr4jF1DoaZm4frdWnj7ayBtC2EmN8ydDLkNrJe-VY2pZ1Npn"/><div class="text-headline-md font-headline-md font-bold text-primary dark:text-primary tracking-tighter">RazorLedger</div></div><div class="flex gap-4"><span class="material-symbols-outlined text-primary hover:text-primary-fixed-dim transition-colors" data-icon="notifications_active" data-weight="fill" style="font-variation-settings: 'FILL' 1;">notifications_active</span><span class="material-symbols-outlined text-primary hover:text-primary-fixed-dim transition-colors" data-icon="settings">settings</span><span class="material-symbols-outlined text-primary hover:text-primary-fixed-dim transition-colors" data-icon="account_circle">account_circle</span></div></header>
+<!-- Side Navigation (Desktop) -->
+<nav class="hidden md:flex flex-col bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant fixed left-0 top-0 h-screen w-64 z-50 p-4 gap-2">
+<div class="flex flex-col gap-2 mb-6 mt-2"><img alt="RazorLedger Logo" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVKce6mVyXS3ygRTLNBk8ytHI9_9zW4x1Is_TBD9k6E0lfXd4jKzpjZZ9hPbB3D2MeBD-UIMof6mJVJ9pvBtS2vDlXo0zGW4msa2NmIpxkZOTZoGvxHQftnMKC_t2qPbNUMZ9tGuDin4XglrgoNUgy6BpqGBuwikd0mPh7GZ6jEmTGIifbvV2fanRqKe6h4NxnPJ7prr4jF1DoaZm4frdWnj7ayBtC2EmN8ydDLkNrJe-VY2pZ1Npn"/>
+<div class="font-headline-md text-primary font-bold tracking-tighter">RazorLedger Console</div>
+<div class="font-mono-label text-mono-label text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified_user">verified_user</span>
+                System Auditor Profile
+             </div>
+</div>
+<div class="flex flex-col gap-1 flex-grow">
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-mono-label text-mono-label">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="rule_folder">rule_folder</span>
+<span class="font-mono-label text-mono-label">Review Queue</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-mono-label text-mono-label">Audit Trail</span>
+</a>
+<a class="flex items-center gap-3 p-3 bg-primary-container text-on-primary-container font-bold rounded-lg transition-all duration-150 scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+<span class="font-mono-label text-mono-label">Controls &amp; Safety</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-mono-label text-mono-label">Model Performance</span>
+</a>
+</div>
+<button class="bg-primary text-on-primary font-mono-label text-mono-label py-3 px-4 rounded-DEFAULT font-bold flex items-center justify-center gap-2 mb-4 hover:bg-primary-fixed-dim transition-colors active:scale-95 cursor-not-allowed opacity-80" disabled="">
+<span class="material-symbols-outlined text-[16px]" data-icon="sync_lock">sync_lock</span>
+             Force Sync Ledger
+        </button>
+<div class="flex flex-col gap-1 border-t border-outline-variant pt-4">
+<a class="flex items-center gap-3 p-2 text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="monitor_heart">monitor_heart</span>
+<span class="font-mono-label text-mono-label">System Health</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="terminal">terminal</span>
+<span class="font-mono-label text-mono-label">API Docs</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow md:ml-64 bg-background min-h-screen flex flex-col">
+<!-- Top App Bar for Desktop Content Area (Optional Context) -->
+<div class="hidden md:flex bg-surface border-b border-outline-variant items-center justify-between px-6 py-4 sticky top-0 z-40">
+<h1 class="font-display-lg text-display-lg text-on-surface">Immutable Safety Controls</h1>
+<div class="flex items-center gap-4">
+<div class="bg-error-container text-on-error-container px-3 py-1 rounded-DEFAULT border border-error flex items-center gap-2 text-mono-label font-mono-label uppercase">
+<span class="material-symbols-outlined text-[14px]">gavel</span>
+                    SYSTEM ENFORCED
+                </div>
+</div>
+</div>
+<div class="p-6 md:p-8 flex-grow flex flex-col gap-6 max-w-container-max mx-auto w-full">
+<!-- Global Banner -->
+<div class="bg-surface-variant border-l-4 border-error p-4 flex items-start gap-3 rounded-r-DEFAULT shadow-sm">
+<span class="material-symbols-outlined text-error mt-0.5" data-icon="warning">warning</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Financial controls cannot be bypassed.</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">The following rulesets are cryptographically locked and enforced globally across all reconciliation instances. Manual overrides are disabled.</p>
+</div>
+</div>
+<!-- Stats Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-surface border border-outline-variant rounded-DEFAULT p-5 flex flex-col gap-2">
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Intercepted Anomalies (24h)</span>
+<span class="font-display-lg text-display-lg text-primary">1,402</span>
+</div>
+<div class="bg-surface border border-outline-variant rounded-DEFAULT p-5 flex flex-col gap-2">
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Unsafe Matches Prevented</span>
+<span class="font-display-lg text-display-lg text-primary">$4.2M</span>
+</div>
+<div class="bg-surface border border-outline-variant rounded-DEFAULT p-5 flex flex-col gap-2">
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Active Control Policies</span>
+<span class="font-display-lg text-display-lg text-on-surface flex items-center gap-2">
+                        10 <span class="material-symbols-outlined text-primary text-[20px]" data-icon="lock">lock</span>
+</span>
+</div>
+</div>
+<!-- Controls Grid -->
+<div class="bg-surface border border-outline-variant rounded-DEFAULT overflow-hidden">
+<div class="px-5 py-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-on-surface">Active Enforcement Ledger</h2>
+<span class="font-mono-label text-mono-label text-on-surface-variant">CTRL-001 TO CTRL-010</span>
+</div>
+<div class="grid grid-cols-1 divide-y divide-outline-variant">
+<!-- Control 1 (Failure Highlight) -->
+<div class="p-5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-surface hover:bg-surface-container-high transition-colors relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="flex items-start gap-4">
+<div class="bg-surface-container-highest p-2 border border-outline-variant rounded-DEFAULT mt-1">
+<span class="material-symbols-outlined text-error" data-icon="price_change">price_change</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-mono-label text-mono-label text-error bg-error/10 px-2 py-0.5 rounded-DEFAULT border border-error/20">CTRL-001</span>
+<h3 class="font-mono-data text-mono-data text-on-surface font-bold">Amount/Currency Exact Match</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Requires identical numeric values and ISO currency codes between source ledgers before match execution.</p>
+<div class="mt-2 text-xs font-mono-label text-error bg-error/10 inline-block px-2 py-1 border border-error/30 rounded-DEFAULT">
+                                    FAILURE SPY: Intercepted mismatched currency pairs (USD/EUR) attempting reconciliation.
+                                </div>
+</div>
+</div>
+<div class="flex items-center gap-2 font-mono-label text-mono-label text-primary bg-primary/10 px-3 py-1.5 rounded-DEFAULT border border-primary/20 shrink-0">
+<span class="material-symbols-outlined text-[16px]" data-icon="gpp_good">gpp_good</span>
+                            ENFORCED
+                        </div>
+</div>
+<!-- Control 2 -->
+<div class="p-5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-surface hover:bg-surface-container-high transition-colors">
+<div class="flex items-start gap-4 pl-1">
+<div class="bg-surface-container-highest p-2 border border-outline-variant rounded-DEFAULT mt-1">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-mono-label text-mono-label text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded-DEFAULT border border-outline-variant">CTRL-002</span>
+<h3 class="font-mono-data text-mono-data text-on-surface font-bold">Counterparty Valid Verification</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ensures both settling entities exist in the verified global ledger directory.</p>
+</div>
+</div>
+<div class="flex items-center gap-2 font-mono-label text-mono-label text-primary bg-primary/10 px-3 py-1.5 rounded-DEFAULT border border-primary/20 shrink-0">
+<span class="material-symbols-outlined text-[16px]" data-icon="gpp_good">gpp_good</span>
+                            ENFORCED
+                        </div>
+</div>
+<!-- Control 10 (Failure Highlight) -->
+<div class="p-5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-surface hover:bg-surface-container-high transition-colors relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="flex items-start gap-4">
+<div class="bg-surface-container-highest p-2 border border-outline-variant rounded-DEFAULT mt-1">
+<span class="material-symbols-outlined text-error" data-icon="event_busy">event_busy</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-mono-label text-mono-label text-error bg-error/10 px-2 py-0.5 rounded-DEFAULT border border-error/20">CTRL-010</span>
+<h3 class="font-mono-data text-mono-data text-on-surface font-bold">Strict Date Window Drift</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Prevents settlement of transactions with timestamp variances exceeding 500ms.</p>
+<div class="mt-2 text-xs font-mono-label text-error bg-error/10 inline-block px-2 py-1 border border-error/30 rounded-DEFAULT">
+                                    FAILURE SPY: 42 records intercepted with T+1 settlement lag anomalies.
+                                </div>
+</div>
+</div>
+<div class="flex items-center gap-2 font-mono-label text-mono-label text-primary bg-primary/10 px-3 py-1.5 rounded-DEFAULT border border-primary/20 shrink-0">
+<span class="material-symbols-outlined text-[16px]" data-icon="gpp_good">gpp_good</span>
+                            ENFORCED
+                        </div>
+</div>
+<!-- Control 3-9 (Condensed for visual density) -->
+<div class="p-3 bg-surface-dim flex justify-center border-t border-outline-variant">
+<span class="font-mono-label text-mono-label text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+                             View Remaining 7 Enforced Controls
+                         </span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile) -->
+<nav class="md:hidden bg-surface dark:bg-surface border-t border-outline-variant fixed bottom-0 w-full z-50 px-2 py-2 flex justify-around">
+<a class="flex flex-col items-center p-2 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-mono-label text-[10px] mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="rule_folder">rule_folder</span>
+<span class="font-mono-label text-[10px] mt-1">Queue</span>
+</a>
+<a class="flex flex-col items-center p-2 text-primary border-t-2 border-primary mt(-2)" href="#">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+<span class="font-mono-label text-[10px] mt-1 font-bold">Controls</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-mono-label text-[10px] mt-1">Stats</span>
+</a>
+</nav>
+</body></html>

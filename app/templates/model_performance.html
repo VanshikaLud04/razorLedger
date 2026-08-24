@@ -183,95 +183,115 @@ Support
 </div>
 <!-- Bento Grid Layout -->
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter flex-grow">
-<!-- Main Matrix Area (Spans 8 columns) -->
-<div class="lg:col-span-8 bg-surface-container border border-surface-variant rounded-lg p-6 flex flex-col relative overflow-hidden">
-<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(#fdfffc 1px, transparent 1px); background-size: 20px 20px;"></div>
-<div class="flex justify-between items-center z-10 mb-6">
-<div>
-<h3 class="font-headline-md text-tertiary">Cross-Partition Evaluation Matrix</h3>
-<div class="font-code-sm text-on-surface-variant flex items-center gap-2 mt-1">
-<span class="w-2 h-[1px] bg-outline-variant"></span>
-                                Frozen evaluation across independent data regimes
-                            </div>
-</div>
-</div>
-<div class="z-10 w-full overflow-x-auto bg-surface-dim inner-border rounded">
-<table class="w-full text-left font-code-sm text-sm">
-<thead class="bg-surface-container-high border-b border-surface-variant">
-<tr>
-<th class="py-3 px-4 font-normal text-on-surface-variant">PARTITION</th>
-<th class="py-3 px-4 font-normal text-on-surface-variant">SAFE AUTOMATION</th>
-<th class="py-3 px-4 font-normal text-on-surface-variant">PRECISION</th>
-<th class="py-3 px-4 font-normal text-primary-fixed">FALSE AUTO-MATCH</th>
-</tr>
-</thead>
-<tbody>
-<tr class="border-b border-surface-variant/50 hover:bg-surface-container-high/30 transition-colors">
-<td class="py-3 px-4 text-on-surface flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-outline"></div> DEV</td>
-<td class="py-3 px-4 text-tertiary">76.2%</td>
-<td class="py-3 px-4 text-on-surface-variant">100%</td>
-<td class="py-3 px-4 text-primary-fixed">0.0%</td>
-</tr>
-<tr class="border-b border-surface-variant/50 hover:bg-surface-container-high/30 transition-colors">
-<td class="py-3 px-4 text-on-surface flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-outline"></div> VALIDATION</td>
-<td class="py-3 px-4 text-tertiary">78.6%</td>
-<td class="py-3 px-4 text-on-surface-variant">100%</td>
-<td class="py-3 px-4 text-primary-fixed">0.0%</td>
-</tr>
-<tr class="border-b border-surface-variant/50 hover:bg-surface-container-high/30 transition-colors">
-<td class="py-3 px-4 text-on-surface flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-outline-variant"></div> TEST_ADVERSARIAL</td>
-<td class="py-3 px-4 text-tertiary">76.0%</td>
-<td class="py-3 px-4 text-on-surface-variant">100%</td>
-<td class="py-3 px-4 text-primary-fixed">0.0%</td>
-</tr>
-<tr class="bg-surface-container-high/20 hover:bg-surface-container-high/50 transition-colors">
-<td class="py-3 px-4 text-primary-fixed flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-primary-fixed shadow-[0_0_4px_rgba(0,224,179,0.5)]"></div> FROZEN_UNSEEN</td>
-<td class="py-3 px-4 text-tertiary font-bold">79.5%</td>
-<td class="py-3 px-4 text-on-surface-variant font-bold">100%</td>
-<td class="py-3 px-4 text-primary-fixed font-bold">0.0%</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<!-- Side Stats & Metrics (Spans 4 columns) -->
-<div class="lg:col-span-4 flex flex-col gap-gutter">
-<!-- Top Metric Card -->
-<div class="bg-surface-container border border-surface-variant rounded-lg p-6 flex flex-col justify-between">
-<div class="flex items-start justify-between mb-4">
-<span class="font-label-caps text-on-surface-variant">SAFETY METRIC</span>
-<span class="material-symbols-outlined text-outline-variant text-[16px]">verified_user</span>
-</div>
-<div>
-<div class="font-headline-lg text-primary-fixed">0.0%</div>
-<div class="font-code-sm text-on-surface-variant mt-2 flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px] text-primary-fixed">check_circle</span>
-                                0.0% false auto-match across all frozen partitions.
-                            </div>
-</div>
-<div class="mt-4 w-full h-1 bg-surface-variant rounded-full overflow-hidden flex">
-<div class="h-full bg-primary-fixed w-[100%] shadow-[0_0_4px_rgba(0,224,179,0.8)]"></div>
-</div>
-</div>
-<!-- Summary Card -->
-<div class="bg-surface-container border border-surface-variant rounded-lg p-6 flex-grow flex flex-col">
-<div class="mb-4">
-<span class="font-label-caps text-on-surface-variant">CROSS-PARTITION SUMMARY</span>
-</div>
-<div class="flex-grow flex flex-col gap-4">
-<div class="border-b border-surface-variant pb-3">
-<div class="font-label-caps text-[10px] text-outline-variant mb-1">AGGREGATE PRECISION</div>
-<div class="font-code-sm text-lg text-tertiary">100.0%</div>
-</div>
-<div class="">
-<div class="font-label-caps text-[10px] text-outline-variant mb-1">PIPELINE INTEGRITY</div>
-<div class="font-code-sm text-lg text-primary-fixed flex items-center gap-2">
-<span class="material-symbols-outlined text-sm">lock</span> Mathematically Verified
-                            </div>
-</div>
-</div>
-</div>
-</div>
+    <!-- LEFT: Main Chart Area (Spans 8 columns) -->
+    <div class="lg:col-span-8 bg-surface-container border border-surface-variant rounded-lg p-6 flex flex-col relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(#fdfffc 1px, transparent 1px); background-size: 20px 20px;"></div>
+        
+        <div class="flex justify-between items-center z-10 mb-8">
+            <div>
+                <h3 class="font-headline-md text-tertiary">Safe Automation by Partition</h3>
+                <div class="font-code-sm text-on-surface-variant flex items-center gap-2 mt-1">
+                    <span class="w-2 h-[1px] bg-outline-variant"></span>
+                    Verified across 4 independent data regimes
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="font-headline-lg text-primary">76.0% — 79.5%</div>
+                <div class="font-label-caps text-on-surface-variant">SAFE AUTOMATION RANGE</div>
+                <div class="font-code-sm text-xs text-outline-variant mt-1">Spread: 3.5 pts</div>
+            </div>
+        </div>
+
+        <div class="flex-grow flex flex-col justify-center gap-6 z-10 w-full relative pl-2 pr-4">
+            <!-- DEV Bar -->
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between font-code-sm text-sm">
+                    <span class="text-on-surface flex items-center gap-2"><div class="w-2 h-2 bg-outline rounded-full"></div> DEV</span>
+                    <span class="text-tertiary">76.2%</span>
+                </div>
+                <div class="w-full bg-surface-dim h-4 rounded-full overflow-hidden border border-outline-variant/30 inner-border relative">
+                    <div class="absolute top-0 left-0 h-full bg-outline-variant rounded-full transition-all duration-1000 ease-out" style="width: 76.2%"></div>
+                </div>
+            </div>
+            
+            <!-- VALIDATION Bar -->
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between font-code-sm text-sm">
+                    <span class="text-on-surface flex items-center gap-2"><div class="w-2 h-2 bg-outline rounded-full"></div> VALIDATION</span>
+                    <span class="text-tertiary">78.6%</span>
+                </div>
+                <div class="w-full bg-surface-dim h-4 rounded-full overflow-hidden border border-outline-variant/30 inner-border relative">
+                    <div class="absolute top-0 left-0 h-full bg-outline rounded-full transition-all duration-1000 ease-out" style="width: 78.6%"></div>
+                </div>
+            </div>
+
+            <!-- TEST_ADVERSARIAL Bar -->
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between font-code-sm text-sm">
+                    <span class="text-on-surface flex items-center gap-2"><div class="w-2 h-2 bg-outline-variant rounded-full"></div> TEST_ADVERSARIAL</span>
+                    <span class="text-tertiary">76.0%</span>
+                </div>
+                <div class="w-full bg-surface-dim h-4 rounded-full overflow-hidden border border-outline-variant/30 inner-border relative">
+                    <div class="absolute top-0 left-0 h-full bg-outline-variant rounded-full transition-all duration-1000 ease-out" style="width: 76.0%"></div>
+                </div>
+            </div>
+
+            <!-- FROZEN_UNSEEN Bar -->
+            <div class="flex flex-col gap-2 mt-4 p-4 bg-surface-container-high/40 rounded border border-primary-fixed/20 relative">
+                <div class="absolute -top-3 -left-2 bg-surface-container px-2 border border-primary-fixed/30 rounded flex items-center gap-1">
+                     <span class="material-symbols-outlined text-[10px] text-primary-fixed">lock</span>
+                     <span class="font-label-caps text-[9px] text-primary-fixed">HOLDOUT LOCKED</span>
+                </div>
+                <div class="flex justify-between font-code-sm text-sm mt-1">
+                    <span class="text-primary-fixed flex items-center gap-2 font-bold"><div class="w-2 h-2 bg-primary-fixed rounded-full shadow-[0_0_4px_rgba(0,224,179,0.5)]"></div> FROZEN_UNSEEN</span>
+                    <span class="text-tertiary font-bold">79.5%</span>
+                </div>
+                <div class="w-full bg-surface-dim h-4 rounded-full overflow-hidden border border-primary-fixed/30 inner-border relative">
+                    <div class="absolute top-0 left-0 h-full bg-primary-fixed rounded-full shadow-[0_0_8px_rgba(0,224,179,0.8)] transition-all duration-1000 ease-out" style="width: 79.5%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- RIGHT: Side Stats & Metrics (Spans 4 columns) -->
+    <div class="lg:col-span-4 flex flex-col gap-gutter">
+        <!-- SAFETY GATE Card -->
+        <div class="bg-surface-container border border-surface-variant rounded-lg p-6 flex-grow flex flex-col">
+            <div class="flex items-center gap-2 mb-6 border-b border-surface-variant pb-4">
+                <span class="material-symbols-outlined text-primary-fixed text-[20px]">security</span>
+                <h3 class="font-label-caps text-on-surface-variant text-sm">FINAL SAFETY GATE</h3>
+            </div>
+            
+            <div class="flex-grow flex flex-col justify-center gap-6">
+                <div class="flex justify-between items-center bg-surface-dim p-4 rounded inner-border">
+                    <span class="font-code-sm text-sm text-on-surface-variant">Precision</span>
+                    <span class="font-code-sm text-xl text-tertiary">100.0%</span>
+                </div>
+                
+                <div class="flex justify-between items-center bg-primary-fixed/10 border border-primary-fixed/30 p-4 rounded">
+                    <span class="font-code-sm text-sm text-primary-fixed font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">gavel</span> False Auto-Match
+                    </span>
+                    <span class="font-code-sm text-xl text-primary-fixed font-bold">0.0%</span>
+                </div>
+
+                <div class="flex flex-col gap-4 mt-4">
+                    <div class="flex justify-between items-center border-b border-surface-variant/50 pb-3">
+                        <span class="font-code-sm text-xs text-outline-variant">Ground-Truth Isolation</span>
+                        <span class="font-code-sm text-xs text-primary-fixed flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">verified</span> VERIFIED</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-surface-variant/50 pb-3">
+                        <span class="font-code-sm text-xs text-outline-variant">Allocation Integrity</span>
+                        <span class="font-code-sm text-xs text-primary-fixed flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">verified</span> VERIFIED</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-2">
+                        <span class="font-code-sm text-xs text-outline-variant">Financial Controls</span>
+                        <span class="font-code-sm text-xs text-primary-fixed flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">verified</span> ENFORCED</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </div>
 </div>

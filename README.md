@@ -1,84 +1,181 @@
-<div align="center">
-  <h1>RazorLedger</h1>
-  <p><strong>Structural Financial Reconciliation at Scale</strong></p>
+# RazorLedger
 
-  [![Status](https://img.shields.io/badge/Status-Production_Ready-purple.svg)]()
-  [![Precision](https://img.shields.io/badge/Precision-100%25-brightgreen.svg)]()
-  [![Safe Automation](https://img.shields.io/badge/Safe_Automation-79.5%25-blue.svg)]()
-  [![False Auto-Match](https://img.shields.io/badge/False_Auto--Match-0.0%25-success.svg)]()
-</div>
+> **RazorLedger is a safety-first financial reconciliation engine designed to securely match highly fragmented multi-party financial records.**
 
-<br>
+## 1. The Problem
 
-## 🚀 Overview
+Reconciliation is the process of ensuring that two or more sets of financial records are in agreement. In modern payment flows, this is notoriously difficult because:
+- **Data Fragmentation:** A single customer payment traverses an invoice system, a payment gateway, and a settlement bank account.
+- **Asymmetric Granularity (1:N):** A gateway might settle 50 individual payments into a single bulk bank deposit.
+- **Ambiguous Identifiers:** Counterparty names are truncated, reference numbers are dropped, and memos are manually typed.
+- **Strict Conservation:** Financial systems require perfect value conservation. "Almost right" is mathematically unacceptable.
 
-Financial reconciliation is typically trapped between two extremes:
-1. **Deterministic String Matching:** Safe, but maxes out at ~15% automation.
-2. **Generative AI / ML Models:** Higher automation, but prone to hallucinations and non-deterministic financial errors.
+When automation relies purely on deterministic rules, safe automation rates plateau early. When automation relies purely on opaque AI models, false positives lead to financial discrepancies. 
 
-**RazorLedger** was built to test if we could achieve ML-like automation rates using **structural data engineering** (Evidence-Weighted Scoring and Graph Allocation) while guaranteeing the **100% precision** of deterministic systems through an independent `FinancialControlEngine`.
+**RazorLedger separates the question “Which records look like they match?” from the question “Is it financially safe to trust that match?”**
 
 ---
 
-## 🏗 Architecture (Stages A-F)
+## 2. Core Thesis
 
-The final locked pipeline architecture operates in six distinct stages:
+The core idea of RazorLedger is not simply to "use an LLM to match transactions." 
 
-*   **Stages A-C (Candidate Discovery):** Deterministic, Fuzzy, and Semantic matchers gather candidate edges between Ledgers, Banks, and Gateways.
-*   **Stage D (Evidence-Weighted Scoring):** Matches are scored purely based on the mathematical rarity of the evidence (e.g., matching a rare Invoice ID is worth more than matching the word "Payment").
-*   **Stage E2 (OneToN Allocator):** Legitimate 1:N payment relationships are resolved structurally. The allocator groups candidates into strictly verified bipartite components.
-*   **Stage F (Financial Control Engine):** **The absolute final authority.** Before any candidate is elevated to `MATCH`, it is subjected to rigid invariants (e.g., `CTRL-001` Conservation of Value, `CTRL-002` Currency Lock). If it fails, it structurally drops to `REVIEW`.
-
----
-
-## 📊 Final Certified Metrics 
-
-*Compared against the original deterministic baseline on the DEV partition.*
-
-| Metric | Deterministic Baseline | Structural Engine | Delta |
-| :--- | :--- | :--- | :--- |
-| **MATCH Count** | 68 | **343** | <span style="color:green">**+275**</span> |
-| **Safe Automation** | 15.1% | **76.2%** | <span style="color:green">**+61.1%**</span> |
-| **Value Coverage** | 14.2% | **77.8%** | <span style="color:green">**+63.6%**</span> |
-| **Precision** | 100% | **100%** | **0.0%** |
-| **False Auto-Match** | 0.0% | **0.0%** | **0.0%** |
-
-### Adversarial & Unseen Generalization
-The pipeline maintained **100% precision** on the `TEST_ADVERSARIAL` partition (which contained simulated hallucination traps and tax mismatches) and generalized exceptionally well to the `FROZEN_UNSEEN` partition (**79.5% safe automation** without any tuning).
+The thesis is:
+1. **Matching generates evidence.** (Deterministic, fuzzy, semantic, and LLM signals are combined under bounded scoring rules).
+2. **Allocation structures it.** (1:N batch grouping).
+3. **Independent financial controls decide.** (Whether automation is mathematically safe).
+4. **Audit trails explain.** (Transparent evidence chains).
+5. **Humans resolve.** (Remaining uncertain or blocked cases are routed to REVIEW/PENDING rather than being forced into automation).
 
 ---
 
-## 🧠 LLM Findings
+## 3. What We Achieved (Final Results)
 
-During experimentation, we integrated a bounded Large Language Model (LLM) into Stage E to determine if Generative AI could safely boost automation. 
+The following benchmarks were generated on the completely frozen system configuration, using the final strict evaluation partitions.
 
-**The empirical result:** `0.0% safe automation lift.` 
+*(Canonical Source: `reports/final/FINAL_SCORECARD.json`)*
 
-The LLM could not mathematically surpass the 0.80 safety threshold for borderline cases without hallucinating. The massive 65%+ increase in automation was driven *entirely* by structural engineering (Evidence-Weighted Scoring and 1:N Graph Allocation). 
+> [!IMPORTANT]
+> **Highlights on FROZEN_UNSEEN:**
+> * **79.5%** safe automation
+> * **100%** precision
+> * **0.0%** false auto-match
 
-> [!NOTE]
-> Generative AI is structurally unsuited for high-stakes arithmetic reconciliation.
+| Partition | Total Records | MATCH | REVIEW | Safe Automation | Value Coverage | Precision | False Auto-Match |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **DEV** | 450 | 343 | 101 | **76.2%** | 77.8% | 1.00 | **0.0%** |
+| **VALIDATION** | 450 | 354 | 91 | **78.6%** | 76.6% | 1.00 | **0.0%** |
+| **ADVERSARIAL** | 450 | 342 | 102 | **76.0%** | 76.3% | 1.00 | **0.0%** |
+| **FROZEN UNSEEN** | 450 | 358 | 84 | **79.5%** | 78.9% | 1.00 | **0.0%** |
 
----
-
----
-
-## 🛠 Reproducibility & Auditability
-
-RazorLedger guarantees that:
-*   The `FinancialControlEngine` **cannot be bypassed**.
-*   **0% Ground Truth Leakage** exists in the inference pipeline.
-*   Every source record is disposed deterministically (`MATCH`, `REVIEW`, `PENDING`, `NO_MATCH`).
-*   Duplicate and over-allocations are structurally blocked.
-
-The project contains exactly two canonical reproduction scripts in the `scripts/` directory:
-1. `run_final_benchmark.py`: Runs the pipeline across all partitions.
-2. `run_final_ablation.py`: Runs A-F feature ablation.
-
-For full execution details, see [`docs/final/FINAL_REPRODUCIBILITY.md`](docs/final/FINAL_REPRODUCIBILITY.md).
-For the detailed safety audit, see [`docs/final/FINAL_SAFETY_AUDIT.md`](docs/final/FINAL_SAFETY_AUDIT.md).
+*Note: Upstream stages can produce substantially more provisional matches; Stage F independently rejects proposals that violate financial invariants. This deliberate reduction is a safety property, not a failure mode.*
 
 ---
 
-## ⚠️ Known Limitations
-The system explicitly handles **1:1** and **1:N** relationships. Complex **M:N** relationships (where multiple bank settlements cover multiple disjoint invoices simultaneously without clear intermediate routing) are structurally rejected to `REVIEW`.
+## 4. Build Quality & Architecture
+
+RazorLedger evaluates candidate matches through a strict, multi-stage pipeline. Every stage adds evidence, but no stage is permitted to bypass the financial controls.
+
+```mermaid
+flowchart TD
+    subgraph Sources
+        B[Bank Records]
+        G[Gateway Records]
+        I[Invoices]
+    end
+
+    subgraph "RazorLedger Pipeline"
+        A{Stage A: Deterministic}
+        BC[Stage B/C: Fuzzy & Semantic Evidence]
+        D[Stage D: Probabilistic Scoring]
+        E[Stage E: Bounded LLM Evidence]
+        E2[Stage E2: 1:N Allocation]
+        F{Stage F: Financial Controls}
+        
+        A -->|Unresolved| BC
+        BC --> D
+        D -->|Ambiguous Tie| E
+        D -->|Clear| E2
+        E --> E2
+        E2 --> F
+    end
+
+    subgraph "Final Decisions"
+        MATCH([MATCH])
+        REVIEW([REVIEW])
+        PENDING([PENDING])
+    end
+
+    B & G & I --> A
+    A -->|Resolved| F
+    F -->|Passes Invariants| MATCH
+    F -->|Fails Invariants| REVIEW
+    D -->|Low Confidence| REVIEW
+```
+
+* **Stage A (Deterministic + Blocking):** Reduces the massive cross-source cartesian product into a manageable set of high-probability candidate pairs using strict reference matches.
+* **Stage B (Fuzzy):** Computes normalized Levenshtein distances on textual fields.
+* **Stage C (Semantic):** Uses vector embeddings to capture semantic similarity between truncated or noisy counterparty descriptions.
+* **Stage D (Evidence-Weighted Scoring):** Aggregates deterministic, fuzzy, and semantic signals into a probabilistic confidence score.
+* **Stage E (Bounded LLM Evidence):** Invokes an LLM on edge-case ambiguities. 
+* **Stage E2 (OneToN Allocation):** Structures 1:N candidate groupings using a subset-sum dynamic programming allocator.
+* **Stage F (Independent Financial Verification):** The absolute financial authority. Applies non-negotiable double-entry invariants, tolerance caps, and currency controls. 
+
+**Engineering Highlights:**
+- **Exact Financial Conservation:** Stage F blocks any proposed match that leaks value.
+- **PENDING Lifecycle:** Correctly differentiates between mathematical "no match" and records that are still within their valid T+3 settlement window.
+- **Auditability:** Every match produces a chained audit record explaining exactly which signals contributed to the confidence score, and which controls passed.
+
+---
+
+## 5. AI Judgment
+
+The core design principle of RazorLedger is that **the LLM is an evidence layer, not the final financial authority.**
+
+The LLM cannot:
+- Directly approve a `MATCH`.
+- Bypass financial controls.
+- Mutate the ledger state.
+- Override invariant logic.
+
+### Honest LLM Evaluation
+We tested whether LLM-generated evidence could safely increase automation on exact-tie ambiguities. On this evaluation distribution, **the incremental safe-automation lift of the LLM (Stage D → Stage E) was exactly 0.0%.** 
+
+The existing deterministic, fuzzy, and semantic evidence already extracted the maximum safe automation ceiling. Rather than manufacturing a fake improvement or weakening the safety boundary to allow the LLM to guess, we preserved the integrity of the system. AI assists by providing supporting evidence for selected ambiguities, but it is safely ignored when it cannot mathematically guarantee the outcome.
+
+---
+
+## 6. Failure Recovery
+
+Building RazorLedger exposed real engineering friction. We documented these failures and our structural fixes:
+
+1. **LLM Library API Deprecation**
+   - *Problem:* LLM invocation failed entirely with `module 'instructor' has no attribute 'from_gemini'`.
+   - *Root Cause:* The `instructor` library deprecated its Gemini interface mid-development.
+   - *Fix:* Stripped the dependency and implemented native `google-genai` structured outputs via `GenerateContentConfig`.
+   
+2. **Network Sandbox & TCP Dropping**
+   - *Problem:* Sandbox environments aggressively dropped outbound `POST` payloads for HuggingFace embeddings and Gemini API calls, causing the pipeline to hang indefinitely.
+   - *Root Cause:* Cloud firewall egress rules on the evaluation environment.
+   - *Fix:* Architected a true 2-phase LLM batching system (evaluating up to 8 groups per call) to aggressively minimize outbound network connections, and executed evaluations on a network-enabled terminal offline.
+
+3. **PENDING Lifecycle Routing Bug**
+   - *Problem:* Early versions conflated low-confidence matches with pending settlements.
+   - *Root Cause:* The decision engine routed all "no candidate found" results to `PENDING`, regardless of the record's transaction date.
+   - *Fix:* Decoupled the lifecycle state. Model uncertainty now strictly routes to `REVIEW` or `NO_MATCH`. `PENDING` is exclusively reserved for records still legally within their settlement window (e.g., `INITIATED` status).
+
+4. **Ablation Wiring Bug**
+   - *Problem:* Initial A–F ablation runs produced identical results across stages because the stage-disable hooks for D/E/F were incomplete.
+   - *Root Cause:* Evaluation toggles were not fully wired into the pipeline.
+   - *Fix:* Added explicit stage isolation and regression-tested default-path equivalence before trusting the ablation results.
+
+---
+
+## 7. Demo
+
+Running the end-to-end evaluation script demonstrates:
+1. **Reconciliation Run:** Full processing of 450 records per partition.
+2. **Safe 1:N Allocation:** Groups multiple gateway payments against bulk bank settlements.
+3. **Why a case was NOT automated:** Clear audit trails indicating `CONFIDENCE_GAP_INSUFFICIENT` or `LIFECYCLE_PENDING_SETTLEMENT`.
+4. **Financial Control Rejection:** The critical Stage F step catching and rejecting value-leaking candidates.
+5. **Adversarial Simulation:** Testing against 30% synthetic data corruption and noise.
+6. **Final Benchmark:** The output of the strict Stage A-F scorecard.
+
+---
+
+## 8. Reproducibility
+
+RazorLedger is designed for absolute reproducibility. 
+
+> **Reproducibility relies on: seeded evaluation partitions, deterministic benchmark configuration, and an isolated test suite for allocation and financial-control invariants.**
+
+For setup, benchmark commands, and offline execution instructions, refer to:
+👉 [docs/final/FINAL_REPRODUCIBILITY.md](docs/final/FINAL_REPRODUCIBILITY.md)
+
+---
+
+## 9. Limitations
+
+- **Synthetic Evaluation Data:** The benchmarks rely on synthetically generated ledgers. While seeded with realistic corruption rates, production data distributions will vary.
+- **No Universal Claim of Production Accuracy:** The frozen evaluation recorded 0.0% false auto-matches across DEV, VALIDATION, TEST_ADVERSARIAL, and FROZEN_UNSEEN. Independent controls are designed to fail closed when financial invariants are violated, but production deployment requires rigorous offline shadow-testing.
+- **LLM Rate Limits:** Running massive backlogs through the LLM requires careful handling of API rate limits, which is why the system caps calls via a strict run-level budget constraint.

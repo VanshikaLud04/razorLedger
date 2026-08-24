@@ -179,3 +179,26 @@ For setup, benchmark commands, and offline execution instructions, refer to:
 - **Synthetic Evaluation Data:** The benchmarks rely on synthetically generated ledgers. While seeded with realistic corruption rates, production data distributions will vary.
 - **No Universal Claim of Production Accuracy:** The frozen evaluation recorded 0.0% false auto-matches across DEV, VALIDATION, TEST_ADVERSARIAL, and FROZEN_UNSEEN. Independent controls are designed to fail closed when financial invariants are violated, but production deployment requires rigorous offline shadow-testing.
 - **LLM Rate Limits:** Running massive backlogs through the LLM requires careful handling of API rate limits, which is why the system caps calls via a strict run-level budget constraint.
+
+---
+
+## 10. Running the UI
+
+RazorLedger includes a polished, fully-integrated frontend built with FastAPI and Tailwind CSS.
+
+To start the UI server locally:
+
+```bash
+PYTHONPATH=. uvicorn app.main:app --port 8000 --reload
+```
+
+Once the server is running, open your browser and navigate to the **Dashboard**:
+👉 [http://localhost:8000/ui/dashboard](http://localhost:8000/ui/dashboard)
+
+From the Dashboard, you can seamlessly navigate through all 6 canonical screens using the sidebar:
+- Dashboard
+- Reconciliation Run
+- Forensic Review
+- Allocation Visual
+- Safety & Controls
+- Model Performance

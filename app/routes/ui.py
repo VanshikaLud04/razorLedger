@@ -12,9 +12,6 @@ async def dashboard(request: Request):
 async def reconciliation_run(request: Request):
     return templates.TemplateResponse(request=request, name="reconciliation_run.html")
 
-@router.get("/match_review_queue")
-async def match_review_queue(request: Request):
-    return templates.TemplateResponse(request=request, name="match_review_queue.html")
 
 @router.get("/model_performance")
 async def model_performance(request: Request):

@@ -83,97 +83,15 @@ def run_pipeline(seed: str, partition: str, label: str) -> tuple[PipelineResult,
     return result, record_id_to_truth_group
 
 
+from evaluation.benchmark import BenchmarkEvaluator
+
 def evaluate(result: PipelineResult, record_id_to_group: dict) -> dict:
-    """
-    Evaluate decisions against ground truth.
-    Uses explicit source_record_id -> ground_truth_group_id lookup without string splitting.
-    """
-    true_matches = 0
-    false_auto_matches = 0
-    total_value = 0
-    verified_value = 0
-    
-    # Track event resolution
-    event_status = {}  # group_id -> {'total_records': 0, 'correct_matches': 0}
-    for sid, gid in record_id_to_group.items():
-        if gid:
-            if gid not in event_status:
-                event_status[gid] = {'total_records': 0, 'correct_matches': 0}
-            event_status[gid]['total_records'] += 1
-
-    for dec in result.decisions:
-        raw_sid = dec.source_event_id
-        total_value += dec.amount_minor_units
-        my_group = record_id_to_group.get(raw_sid)
-
-        if dec.action == 'MATCH':
-            verified_value += dec.amount_minor_units
-            chosen_sid = dec.chosen_candidate_sid
-            if chosen_sid:
-                chosen_group = record_id_to_group.get(chosen_sid)
-                if my_group and chosen_group and my_group == chosen_group:
-                    true_matches += 1
-                    event_status[my_group]['correct_matches'] += 1
-                else:
-                    false_auto_matches += 1
-            else:
-                false_auto_matches += 1
-
-    auto_resolved = result.auto_resolved
-    false_auto_match_rate = false_auto_matches / auto_resolved if auto_resolved else 0.0
-    value_coverage = verified_value / total_value if total_value else 0.0
-    
-    events_fully_resolved = sum(1 for status in event_status.values() 
-                              if status['total_records'] > 0 and 
-                              status['correct_matches'] == status['total_records'])
-
-    return {
-        'true_matches': true_matches,
-        'false_auto_matches': false_auto_matches,
-        'false_auto_match_rate': false_auto_match_rate,
-        'value_coverage_pct': value_coverage,
-        'total_value_minor': total_value,
-        'verified_value_minor': verified_value,
-        'events_fully_resolved': events_fully_resolved,
-        'total_events': len(event_status)
-    }
+    # Deprecated: use BenchmarkEvaluator instead
+    pass
 
 def print_scorecard(label: str, result: PipelineResult, eval_metrics: dict):
-    total = len(result.decisions)
-    sep = '─' * 60
-    print(f"\n{'═'*60}")
-    print(f"  RazorLedger — Run Scorecard: {label}")
-    print(f"{'═'*60}")
-    print(f"  Economic events total: {eval_metrics.get('total_events', 150):>6}")
-    print(f"  Events fully resolved: {eval_metrics.get('events_fully_resolved', 0):>6}")
-    print(sep)
-    print(f"  Source records total : {result.total_source_records:>6}  (150 events × 3 sources)")
-    print(f"  Deduplicated         : {result.deduplicated:>6}  (idempotency catches)")
-    print(f"  Accepted into pipeline: {result.accepted:>5}")
-    print(sep)
-    print(f"  Decisions total      : {total:>6}")
-    print(f"  MATCH (auto-resolved): {result.auto_resolved:>6}  ({result.safe_automation_rate:>7.1%})")
-    print(f"  REVIEW               : {result.review_count:>6}  ({result.review_rate:>7.1%})")
-    print(f"  NO_MATCH             : {result.no_match_count:>6}  ({result.no_match_rate:>7.1%})")
-    print(f"  PENDING              : {result.pending_count:>6}  ({result.pending_rate:>7.1%})")
-    print(f"  Non-automated total  : {result.review_count+result.no_match_count+result.pending_count:>6}  ({result.non_automated_rate:>7.1%})")
-    print(sep)
-    print(f"  Blocking: naive={result.naive_comparison_count:,}  "
-          f"candidates={result.candidate_pair_count:,}  "
-          f"reduction={result.blocking_reduction_factor:.1f}x")
-    print(sep)
-    print("  HERO METRICS (in priority order):")
-    print(f"  1. Safe automation rate    : {result.safe_automation_rate:>7.1%}")
-    print(f"  2. Value coverage          : {eval_metrics['value_coverage_pct']:>7.1%}  "
-          f"(₹{eval_metrics['verified_value_minor']//100:,} of ₹{eval_metrics['total_value_minor']//100:,})")
-    print(f"  3. False auto-match rate   : {eval_metrics['false_auto_match_rate']:>7.1%}  "
-          f"({eval_metrics['false_auto_matches']} wrong auto-matches)")
-    print(f"  4. Review rate             : {result.review_rate:>7.1%}")
-    print(f"  5. Adversarial holdout     : {'N/A (P1)':>12}")
-    print(sep)
-    print(f"  True matches (verified)  : {eval_metrics['true_matches']:>6}")
-    print(f"  False auto-matches       : {eval_metrics['false_auto_matches']:>6}")
-    print(f"{'═'*60}\n")
+    # Deprecated: use BenchmarkEvaluator instead
+    pass
 
 
 
@@ -188,8 +106,9 @@ def main():
         partition='DEV',
         label='DEV',
     )
-    eval_metrics_dev = evaluate(result_dev, truth_dev)
-    print_scorecard('DEV', result_dev, eval_metrics_dev)
+    evaluator_dev = BenchmarkEvaluator(truth_dev, result_dev)
+    metrics_dev = evaluator_dev.compute()
+    evaluator_dev.generate_scorecard('DEV', metrics_dev)
 
     # Run on VALIDATION
     result_val, truth_val = run_pipeline(
@@ -197,8 +116,9 @@ def main():
         partition='VALIDATION',
         label='VALIDATION',
     )
-    eval_metrics_val = evaluate(result_val, truth_val)
-    print_scorecard('VALIDATION', result_val, eval_metrics_val)
+    evaluator_val = BenchmarkEvaluator(truth_val, result_val)
+    metrics_val = evaluator_val.compute()
+    evaluator_val.generate_scorecard('VALIDATION', metrics_val)
 
     # Run on ADVERSARIAL_HOLDOUT
     result_adv, truth_adv = run_pipeline(
@@ -206,8 +126,9 @@ def main():
         partition='ADVERSARIAL_HOLDOUT',
         label='ADVERSARIAL_HOLDOUT',
     )
-    eval_metrics_adv = evaluate(result_adv, truth_adv)
-    print_scorecard('ADVERSARIAL_HOLDOUT', result_adv, eval_metrics_adv)
+    evaluator_adv = BenchmarkEvaluator(truth_adv, result_adv)
+    metrics_adv = evaluator_adv.compute()
+    evaluator_adv.generate_scorecard('ADVERSARIAL_HOLDOUT', metrics_adv)
 
     # FROZEN_UNSEEN is explicitly skipped/untouched until system is frozen.
     print("FROZEN_UNSEEN skipped (reserved for final evaluation).")

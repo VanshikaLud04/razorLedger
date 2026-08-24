@@ -131,8 +131,9 @@ class ReconciliationPipeline:
     DB-backed version wires the same logic through IngestService + async routes.
     """
 
-    def __init__(self, config: dict | None = None, rarity_frequencies: dict | None = None):
+    def __init__(self, config: dict | None = None, rarity_frequencies: dict | None = None, disabled_stages: set[str] | None = None):
         self.config = config or load_config()
+        self.disabled_stages = disabled_stages or set()
         self.det = DeterministicMatcher(self.config)
         self.fuzz = FuzzyMatcher(self.config)
         self.evb = EvidenceFeatureBuilder(self.config, rarity_frequencies)
@@ -237,9 +238,18 @@ class ReconciliationPipeline:
                     continue
                 cand = unresolved_by_sid[csid]
                 dm = self.det.match(rec, cand)
-                fs = self.fuzz.score(rec, cand)
+                
+                if 'B_FUZZY' in self.disabled_stages:
+                    fs = {'fuzzy_score': 0.0, 'amount_distance': 1.0, 'date_distance': 1.0}
+                else:
+                    fs = self.fuzz.score(rec, cand)
+                    
                 ev = self.evb.build(rec, cand, fs, dm)
-                sem = self.semantic.build(rec, cand)
+                
+                if 'C_SEMANTIC' in self.disabled_stages:
+                    sem = {}
+                else:
+                    sem = self.semantic.build(rec, cand)
                 ev.update(sem)
                 candidate_evidences.append({
                     **ev,

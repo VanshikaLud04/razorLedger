@@ -29,4 +29,4 @@ The final integrated `ReconciliationPipeline` (Stages A-F) was evaluated exactly
 | **False Auto-Match Rate** | **0.0%** |
 
 ## Conclusion
-The architecture has proven highly robust. It generalized identically to the FROZEN_UNSEEN dataset, exceeding the DEV benchmark (76.2% -> 79.5%) while maintaining the strict 0% false auto-match constraint. The performance improvement from Phase 1 (15.1%) is verified.
+The architecture has proven highly robust. It generalized identically to the FROZEN_UNSEEN dataset, exceeding the DEV benchmark (76.2% -> 79.5%) while maintaining the strict 0% false auto-match constraint. The performance improvement from the deterministic baseline (15.1%) is verified.

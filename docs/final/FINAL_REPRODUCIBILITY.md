@@ -1,7 +1,7 @@
 # RazorLedger Final Reproducibility Guide
 
 **Date:** 2026-08-24
-**Version:** Final Freeze (Phase 7)
+**Version:** 1.0.0 (Production Ready)
 
 ## Objective
 This document outlines the exact steps required to reproduce the Final Freeze benchmark results for RazorLedger.
@@ -18,7 +18,7 @@ This document outlines the exact steps required to reproduce the Final Freeze be
 ## Canonical Scripts
 The repository contains only two canonical scripts for reproduction, located in `scripts/`:
 
-1. **`run_final_benchmark.py`**: Runs the entire RazorLedger pipeline across all four data partitions (DEV, VALIDATION, TEST_ADVERSARIAL, FROZEN_UNSEEN) and compares the output against the original Phase 1 deterministic baseline.
+1. **`run_final_benchmark.py`**: Runs the entire RazorLedger pipeline across all four data partitions (DEV, VALIDATION, TEST_ADVERSARIAL, FROZEN_UNSEEN) and compares the output against the original original deterministic baseline.
 2. **`run_final_ablation.py`**: Runs a feature ablation (Stages A through F) on the DEV partition to demonstrate the incremental effect of fuzzy matching, semantic matching, rarity scoring, 1:N allocation, and financial verification.
 
 ## Execution

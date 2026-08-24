@@ -202,7 +202,7 @@ class ReconciliationPipeline:
         scored_records = {}
         llm_eligible_groups = []
 
-        # Phase 1: Initial Scoring
+        # Stage 1: Initial Scoring
         for rec in unresolved:
             sid = rec['source_record_id']
             if sid in processed_sids or sid in resolved_sids or sid in allocated_sids:
@@ -306,7 +306,7 @@ class ReconciliationPipeline:
                     'top_candidates': ranked[:2]
                 })
 
-        # Phase 2: Batch LLM Generation (Deterministic Selection)
+        # Stage 2: Batch LLM Generation (Deterministic Selection)
         def _llm_sort_key(g):
             t = g['top_candidates'][0]
             return (
@@ -335,7 +335,7 @@ class ReconciliationPipeline:
                         'route_to_review': r.uncertainty_level == 'HIGH'
                     }
 
-        # Phase 2.5: One-To-N Allocation Grouping
+        # Stage 3: One-To-N Allocation Grouping
         allocator = OneToNAllocator(self.config)
         valid_groups = allocator.group_and_validate(scored_records)
         for group in valid_groups:
@@ -371,7 +371,7 @@ class ReconciliationPipeline:
                     allocated_sids.add(r['source_record_id'])
                 processed_sids.add(r['source_record_id'])
 
-        # Phase 3: Finalization & Controls (for ungrouped records)
+        # Stage 4: Finalization & Controls (for ungrouped records)
         for sid, (rec, ranked) in scored_records.items():
             if sid in processed_sids:
                 continue

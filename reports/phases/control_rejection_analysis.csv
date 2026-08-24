@@ -1,4 +1,0 @@
-control_result,count,total_value,genuinely_unsafe_count,false_positive_count
-FAIL: CTRL-001,86,769159470,0,86
-"FAIL: CTRL-001,CTRL-010",12,95232881,0,12
-FAIL: CTRL-004,2,21528009,0,2

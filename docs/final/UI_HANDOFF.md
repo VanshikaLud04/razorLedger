@@ -4,7 +4,7 @@
 **Status**: Backend FROZEN
 
 ## 1. Frozen Backend Architecture
-The backend reconciliation engine has reached Absolute Freeze (Phase 7). The architecture leverages a bounded `OneToNAllocator` to solve structured N-way allocations and processes all candidates through strict constraints in the `FinancialControlEngine` (enforcing invariants like Conservation of Value). 
+The backend reconciliation engine has reached Absolute Freeze (Production Ready). The architecture leverages a bounded `OneToNAllocator` to solve structured N-way allocations and processes all candidates through strict constraints in the `FinancialControlEngine` (enforcing invariants like Conservation of Value). 
 
 **CRITICAL:** Frontend work **must not** modify backend logic. Do not attempt to bypass controls, adjust thresholds, or restructure the core pipeline to support UI changes. The backend state is canonical and final.
 
@@ -17,7 +17,7 @@ The exact numbers that should be reflected in the UI (or fetched from backend ro
 - **Overall Precision:** 100%
 - **False Auto-Match Rate:** 0.0%
 
-*Note: Any hardcoded claims of "~80-85%" or "80.2%" in the UI from earlier experimental phases are **stale** and should be removed or marked explicitly as superseded/historical.*
+*Note: Any hardcoded claims of "~80-85%" or "80.2%" in the UI from earlier experiments are **stale** and should be removed or marked explicitly as superseded/historical.*
 
 ## 3. Data-Driven Fields
 To prevent drift, the following fields in the UI should be built as dynamic, data-driven fields consuming JSON from the backend, rather than hardcoded HTML text:

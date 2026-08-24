@@ -23,3 +23,11 @@ async def model_performance(request: Request):
 @router.get("/controls_and_safety")
 async def controls_and_safety(request: Request):
     return templates.TemplateResponse("controls_and_safety.html", {"request": request})
+
+@router.get("/allocation_visual")
+async def allocation_visual(request: Request):
+    return templates.TemplateResponse("allocation_visual.html", {"request": request})
+
+@router.get("/decision_detail")
+async def decision_detail(request: Request):
+    return templates.TemplateResponse("decision_detail.html", {"request": request})

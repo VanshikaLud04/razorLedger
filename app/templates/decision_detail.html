@@ -114,7 +114,7 @@
         .edge-line { stroke: #3a4a44; stroke-width: 1; fill: none; }
     </style>
 </head>
-<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row overflow-hidden">
+<body class="bg-background text-on-background font-body-md h-screen flex flex-col md:flex-row overflow-hidden">
 <!-- SideNavBar (Desktop) -->
 <nav class="bg-surface-container-lowest flex flex-col h-screen fixed left-0 top-0 w-64 border-r border-outline-variant z-50">
     <div class="p-margin-desktop border-b border-outline-variant">
@@ -150,7 +150,7 @@
     </div>
 </nav>
 <!-- Main Content Area -->
-<main class="flex-1 flex flex-col md:ml-64 relative min-h-screen">
+<main class="flex-1 flex flex-col md:ml-64 relative h-screen">
 <!-- TopAppBar -->
 <header class="flex justify-between items-center w-full px-margin-desktop sticky top-0 z-40 bg-surface-dim/80 backdrop-blur-md h-16 border-b border-outline-variant">
 <div class="flex items-center gap-4">
@@ -172,7 +172,7 @@
 </div>
 </header>
 <!-- Canvas Area -->
-<div class="flex-1 p-gutter md:p-margin-desktop overflow-hidden flex flex-col gap-gutter">
+<div class="flex-1 p-gutter md:p-margin-desktop overflow-y-auto flex flex-col gap-gutter">
 <!-- Header/Breadcrumbs -->
 <div class="flex justify-between items-end">
 <div>

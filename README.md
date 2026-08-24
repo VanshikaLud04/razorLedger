@@ -17,7 +17,7 @@ Takes three synthetic source representations of the same underlying financial ev
 - An append-only, hash-chained audit trail
 - A structured review queue for unresolvable exceptions
 
-**150 economic events × 3 sources = ~450 source records.** The problem requires 50+; we evaluate on a fixed 150-event frozen benchmark across four strict partitions (DEV, VALIDATION, TEST_ADVERSARIAL, FROZEN_UNSEEN).
+**150 economic events × 3 sources = ~450 source records.** The problem requires 50+; we evaluate on a fixed 150-event frozen benchmark across four strict partitions (DEV, VALIDATION, ADVERSARIAL_HOLDOUT, FROZEN_UNSEEN).
 
 ---
 

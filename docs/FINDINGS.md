@@ -6,7 +6,7 @@ This document summarizes the results and findings of the P1 deterministic evalua
 RazorLedger was evaluated across four strict, non-overlapping partitions of a 150-event synthetic dataset:
 1. **DEV**: Iteration and threshold fitting.
 2. **VALIDATION**: Held-out threshold tuning.
-3. **TEST_ADVERSARIAL**: Heavily corrupted data and missing fields designed to stress the financial controls.
+3. **ADVERSARIAL_HOLDOUT**: Heavily corrupted data and missing fields designed to stress the financial controls.
 4. **FROZEN_UNSEEN**: The final, completely blind evaluation to benchmark true pipeline performance.
 
 ## Pipeline Architecture

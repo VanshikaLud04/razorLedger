@@ -1,8 +1,16 @@
 import sys
 import types
+
 mock_groq = types.ModuleType("groq")
 mock_groq.Groq = lambda *args, **kwargs: None
 sys.modules["groq"] = mock_groq
+
+mock_genai = types.ModuleType("google.genai")
+mock_genai.Client = lambda *args, **kwargs: None
+sys.modules["google.genai"] = mock_genai
+
+mock_genai_types = types.ModuleType("google.genai.types")
+sys.modules["google.genai.types"] = mock_genai_types
 
 from app.pipeline import ReconciliationPipeline
 from app.matching.llm import LLMEvidenceGenerator, LLMAssessment

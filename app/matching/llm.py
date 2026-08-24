@@ -81,6 +81,49 @@ class GroqProvider:
         return False, "", in_t, out_t, cost, self.model
 
 
+class GeminiProvider:
+    def __init__(self, model_name: str = "gemini-2.5-flash", api_key: str | None = None):
+        import google.genai as genai
+        self.client = genai.Client(api_key=api_key or os.environ.get("GEMINI_API_KEY"))
+        self.model = model_name
+
+    def generate(self, prompt: str, schema_class, max_attempts: int, run_id: str, batch_size: int):
+        import time
+        from google.genai import types
+        in_t = out_t = 0
+        cost = 0.0
+        attempt = 0
+        
+        while attempt < max_attempts:
+            attempt += 1
+            try:
+                # The Qwen/Groq json_object-not-schema-embedding fix: 
+                # We just ask for JSON using response_mime_type and let it follow the prompt
+                resp = self.client.models.generate_content(
+                    model=self.model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=0.0,
+                        response_mime_type="application/json",
+                    )
+                )
+                
+                if resp.usage_metadata:
+                    in_t += resp.usage_metadata.prompt_token_count
+                    out_t += resp.usage_metadata.candidates_token_count
+                    
+                # Gemini costs (approx $0.075 / 1M in, $0.30 / 1M out for 2.5-flash)
+                cost += (in_t / 1_000_000) * 0.075 + (out_t / 1_000_000) * 0.30
+                
+                content = resp.text.strip()
+                return True, content, in_t, out_t, cost, self.model
+            except Exception as e:
+                logger.warning(f"Gemini API error on attempt {attempt}: {e}")
+                time.sleep(1)
+                
+        return False, "", in_t, out_t, cost, self.model
+
+
 # --- PIPELINE ADAPTER ---
 
 class LLMEvidenceGenerator:
@@ -99,6 +142,7 @@ class LLMEvidenceGenerator:
         self.out_tokens = 0
         
         self.provider = GroqProvider(model_name="qwen/qwen3.6-27b")
+        self.fallback_provider = GeminiProvider(model_name="gemini-2.5-flash")
 
     def should_invoke(self, ranked: list, index: int) -> bool:
         self.exact_ties += 1
@@ -110,6 +154,19 @@ class LLMEvidenceGenerator:
                 self.queued += 1
                 return True
         return False
+
+    def run_with_fallback(self, prompt: str, schema_class, max_attempts: int, run_id: str, batch_size: int):
+        success, text, in_t, out_t, cost, model = self.provider.generate(
+            prompt, schema_class, max_attempts=max_attempts, run_id=run_id, batch_size=batch_size
+        )
+        if success:
+            return success, text, in_t, out_t, cost, model
+            
+        logger.warning("Primary LLM provider failed. Falling back to Gemini.")
+        success2, text2, in_t2, out_t2, cost2, model2 = self.fallback_provider.generate(
+            prompt, schema_class, max_attempts=max_attempts, run_id=run_id, batch_size=batch_size
+        )
+        return success2, text2, in_t + in_t2, out_t + out_t2, cost + cost2, model2
 
     def generate_batch(self, batch_prompts: list, run_id: str) -> list:
         if not batch_prompts:
@@ -166,7 +223,7 @@ class LLMEvidenceGenerator:
             ']}\n'
         )
             
-        success, text, in_t, out_t, cost, model = self.provider.generate(
+        success, text, in_t, out_t, cost, model = self.run_with_fallback(
             prompt, BatchLLMAssessment, max_attempts=3, run_id=run_id, batch_size=len(batch_prompts)
         )
         self.total_cost += cost

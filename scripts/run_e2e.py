@@ -200,14 +200,14 @@ def main():
     eval_metrics_val = evaluate(result_val, truth_val)
     print_scorecard('VALIDATION', result_val, eval_metrics_val)
 
-    # Run on TEST_ADVERSARIAL
+    # Run on ADVERSARIAL_HOLDOUT
     result_adv, truth_adv = run_pipeline(
-        seed=PARTITION_SEEDS['TEST_ADVERSARIAL'],
-        partition='TEST_ADVERSARIAL',
-        label='TEST_ADVERSARIAL',
+        seed=PARTITION_SEEDS['ADVERSARIAL_HOLDOUT'],
+        partition='ADVERSARIAL_HOLDOUT',
+        label='ADVERSARIAL_HOLDOUT',
     )
     eval_metrics_adv = evaluate(result_adv, truth_adv)
-    print_scorecard('TEST_ADVERSARIAL', result_adv, eval_metrics_adv)
+    print_scorecard('ADVERSARIAL_HOLDOUT', result_adv, eval_metrics_adv)
 
     # FROZEN_UNSEEN is explicitly skipped/untouched until system is frozen.
     print("FROZEN_UNSEEN skipped (reserved for final evaluation).")

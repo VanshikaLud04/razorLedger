@@ -38,7 +38,7 @@ The script will:
 3. Pass records through the `ReconciliationPipeline` (including BGE embeddings and Financial Controls).
 4. Output a scorecard and save a detailed JSON payload of the pipeline run.
 
-To test across different partitions, modify `scripts/run_e2e.py` or use environment variables to switch between `DEV`, `VALIDATION`, `TEST_ADVERSARIAL`, and `FROZEN_UNSEEN`.
+To test across different partitions, modify `scripts/run_e2e.py` or use environment variables to switch between `DEV`, `VALIDATION`, `ADVERSARIAL_HOLDOUT`, and `FROZEN_UNSEEN`.
 
 ## Testing
 

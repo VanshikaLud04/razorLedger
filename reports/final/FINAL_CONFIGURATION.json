@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-08-24T07:42:35.190551+00:00",
+  "git": {
+    "commit": "f2b6d8c173d23a70c1d8865b0b6e57ca00c2e295",
+    "clean": false
+  },
+  "python_version": "3.13.7 (v3.13.7:bcee1c32211, Aug 14 2025, 19:10:51) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "configuration": {
+    "matching": {
+      "auto_match_threshold": 0.8,
+      "review_threshold": 0.4,
+      "minimum_confidence_gap": 0.15,
+      "amount_tolerance_minor": 50,
+      "date_tolerance_days": 3,
+      "settlement_window_days": 5
+    },
+    "evidence": {
+      "min_families_for_auto_match": 2,
+      "amount_bins": {
+        "exact": 0,
+        "near": 50,
+        "close": 500
+      },
+      "date_bins": {
+        "same_day": 0,
+        "near": 1,
+        "close": 3
+      },
+      "reference_bins": {
+        "exact": 1.0,
+        "high": 0.85,
+        "medium": 0.6
+      },
+      "counterparty_bins": {
+        "high": 0.85,
+        "medium": 0.6
+      },
+      "description_bins": {
+        "high": 0.8,
+        "medium": 0.55
+      },
+      "rarity_frequency_file": "data/rarity_frequencies.json"
+    },
+    "llm": {
+      "model": "gemini-3.7-flash",
+      "thinking_level": "low",
+      "max_calls_per_run": 3,
+      "max_groups_per_call": 8,
+      "run_budget_usd": 1.0,
+      "timeout_seconds": 10,
+      "llm_max_evidence_delta": 0.05
+    },
+    "embedding": {
+      "model": "BAAI/bge-small-en-v1.5",
+      "cache_by": "normalized_description"
+    },
+    "dataset": {
+      "records_per_partition": 150,
+      "partitions": [
+        "DEV",
+        "VALIDATION",
+        "ADVERSARIAL_HOLDOUT",
+        "FROZEN_UNSEEN"
+      ],
+      "seeds": {
+        "DEV": "razorledger-dev-v1",
+        "VALIDATION": "razorledger-val-v1",
+        "ADVERSARIAL_HOLDOUT": "razorledger-adv-v1",
+        "FROZEN_UNSEEN": "razorledger-unseen-v1"
+      }
+    },
+    "allocation": {
+      "max_n_candidates": 5,
+      "fee_adjustment_tolerance_minor": 100
+    }
+  },
+  "allocator": "OneToNAllocator (Stage E2)",
+  "financial_control": "FinancialControlEngine (Stage F)",
+  "partitions": [
+    "DEV",
+    "VALIDATION",
+    "TEST_ADVERSARIAL",
+    "FROZEN_UNSEEN"
+  ],
+  "seeds": {
+    "DEV": "razorledger-dev-v1",
+    "VALIDATION": "razorledger-validation-v1",
+    "TEST_ADVERSARIAL": "razorledger-test_adversarial-v1",
+    "FROZEN_UNSEEN": "razorledger-frozen_unseen-v1"
+  },
+  "frozen": true
+}

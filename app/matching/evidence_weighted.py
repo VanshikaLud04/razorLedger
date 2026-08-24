@@ -23,6 +23,10 @@ class EvidenceWeightedScorer:
             'source_incompatible': -0.30,
             'rarity_weight': 0.05,
         }
+        
+        custom_weights = config.get('matching', {}).get('weights', {})
+        self.weights.update(custom_weights)
+        
         self.llm_max_delta = config.get('llm', {}).get('llm_max_evidence_delta', 0.20)
         self.min_families = config.get('evidence', {}).get('min_families_for_auto_match', 2)
         self.auto_match_threshold = config.get('matching', {}).get('auto_match_threshold', 0.80)

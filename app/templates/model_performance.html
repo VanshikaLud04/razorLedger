@@ -250,7 +250,7 @@ Support
 <span class="material-symbols-outlined text-outline-variant text-[16px]">show_chart</span>
 </div>
 <div>
-<div class="font-headline-lg text-tertiary">14.0% <span class="text-on-surface-variant font-body-md">to</span> 15.6%</div>
+<div class="font-headline-lg text-tertiary" id="safe-auto-rate">Loading...</div>
 <div class="font-code-sm text-primary-fixed mt-1 flex items-center gap-1">
 <span class="material-symbols-outlined text-[14px]">check_circle</span>
                                 Within Stability Envelope
@@ -300,5 +300,22 @@ Support
 </div>
 </div>
 </div>
+</div>
 </main>
+<script>
+    async function fetchLatestResults() {
+        try {
+            const response = await fetch('/api/final_metrics');
+            const data = await response.json();
+            if (data.partitions && data.partitions.length > 0) {
+                const devData = data.partitions.find(p => p.partition === 'DEV') || data.partitions[0];
+                const safeAuto = (parseFloat(devData.safe_automation_pct) * 100).toFixed(1);
+                document.getElementById('safe-auto-rate').innerHTML = `${safeAuto}% <span class="text-on-surface-variant font-body-md">FINAL VERIFIED</span>`;
+            }
+        } catch (error) {
+            console.error('Failed to fetch latest results:', error);
+        }
+    }
+    fetchLatestResults();
+</script>
 </body></html>

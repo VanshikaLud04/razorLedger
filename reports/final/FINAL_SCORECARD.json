@@ -1,0 +1,64 @@
+{
+  "partitions": [
+    {
+      "partition": "DEV",
+      "records": 450,
+      "MATCH": 361,
+      "REVIEW": 83,
+      "PENDING": 6,
+      "NO_MATCH": 0,
+      "safe_automation_pct": 0.8022222222222222,
+      "value_coverage_pct": 0.8152986863504039,
+      "precision": 1.0,
+      "recall": 0.8022222222222222,
+      "F1": 0.8902589395807644,
+      "false_auto_match_pct": 0.0,
+      "control_failures": 83
+    },
+    {
+      "partition": "VALIDATION",
+      "records": 450,
+      "MATCH": 382,
+      "REVIEW": 63,
+      "PENDING": 5,
+      "NO_MATCH": 0,
+      "safe_automation_pct": 0.8488888888888889,
+      "value_coverage_pct": 0.8256073779780768,
+      "precision": 1.0,
+      "recall": 0.8488888888888889,
+      "F1": 0.9182692307692308,
+      "false_auto_match_pct": 0.0,
+      "control_failures": 63
+    },
+    {
+      "partition": "TEST_ADVERSARIAL",
+      "records": 450,
+      "MATCH": 369,
+      "REVIEW": 75,
+      "PENDING": 6,
+      "NO_MATCH": 0,
+      "safe_automation_pct": 0.82,
+      "value_coverage_pct": 0.816301870589116,
+      "precision": 1.0,
+      "recall": 0.82,
+      "F1": 0.9010989010989011,
+      "false_auto_match_pct": 0.0,
+      "control_failures": 75
+    },
+    {
+      "partition": "FROZEN_UNSEEN",
+      "records": 450,
+      "MATCH": 381,
+      "REVIEW": 61,
+      "PENDING": 8,
+      "NO_MATCH": 0,
+      "safe_automation_pct": 0.8466666666666667,
+      "value_coverage_pct": 0.8352939258551276,
+      "precision": 1.0,
+      "recall": 0.8466666666666667,
+      "F1": 0.9169675090252708,
+      "false_auto_match_pct": 0.0,
+      "control_failures": 61
+    }
+  ]
+}

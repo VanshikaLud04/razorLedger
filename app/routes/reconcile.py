@@ -2,8 +2,37 @@ from fastapi import APIRouter, Depends
 from app.schemas import ReconcileRunRequest, ReconcileRunResponse, RunScorecard, ReplayRequest, ReplayResponse
 import uuid
 import asyncio
+import csv
+from pathlib import Path
 
 router = APIRouter()
+
+@router.get("/api/final_metrics")
+async def get_final_metrics():
+    # Read from final artifacts
+    delta_file = Path("reports/final/FINAL_DELTA_TABLE.csv")
+    if not delta_file.exists():
+        return {"error": "Final metrics not yet generated"}
+        
+    metrics = {}
+    with open(delta_file, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            metrics[row['Metric']] = {
+                'Original_P1': float(row['Original_P1']),
+                'Final_P7': float(row['Final_P7']),
+                'Absolute_Delta': float(row['Absolute_Delta'])
+            }
+            
+    # Read scorecard partitions
+    scorecard = Path("reports/final/FINAL_SCORECARD.csv")
+    partitions = []
+    if scorecard.exists():
+        with open(scorecard, "r") as f:
+            reader = csv.DictReader(f)
+            partitions = [row for row in reader]
+            
+    return {"delta": metrics, "partitions": partitions}
 
 # In-memory store for P2 UI demo
 _RUNS = {}

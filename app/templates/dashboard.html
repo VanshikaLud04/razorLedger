@@ -522,23 +522,38 @@ void main() {
 <script>
     async function fetchLatestResults() {
         try {
-            const response = await fetch('/reconcile/latest/results');
+            const response = await fetch('/api/final_metrics');
             const data = await response.json();
             
-            // Update metrics
-            if (data.records_total > 0) {
-                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[0].innerText = data.records_total.toLocaleString();
+            if (data.partitions && data.partitions.length > 0) {
+                // Find DEV partition or use first
+                const devData = data.partitions.find(p => p.partition === 'DEV') || data.partitions[0];
+                const total = parseInt(devData.records);
+                const match = parseInt(devData.MATCH);
+                const review = parseInt(devData.REVIEW);
+                const pending = parseInt(devData.PENDING);
+                const no_match = parseInt(devData.NO_MATCH);
+                
+                // Update metrics
+                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[0].innerText = total.toLocaleString();
                 // Economic events (mock derived)
-                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[1].innerText = Math.floor(data.records_total * 0.6).toLocaleString();
-                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[2].innerText = data.auto_resolved.toLocaleString();
-                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[3].innerText = data.review.toLocaleString();
-                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[4].innerText = data.pending.toLocaleString();
-                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[5].innerText = data.no_match.toLocaleString();
+                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[1].innerText = Math.floor(total * 0.6).toLocaleString();
+                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[2].innerText = match.toLocaleString();
+                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[3].innerText = review.toLocaleString();
+                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[4].innerText = pending.toLocaleString();
+                document.querySelectorAll('.font-code-sm.text-\\[20px\\]')[5].innerText = no_match.toLocaleString();
                 
                 // Update flow viz
-                document.querySelectorAll('.flex.flex-col.items-center .text-primary-fixed')[0].innerText = (data.records_total / 1000000).toFixed(1) + 'M';
-                document.querySelectorAll('.flex.flex-col.items-center .text-primary-fixed')[1].innerText = (data.auto_resolved / 1000000).toFixed(1) + 'M';
-                document.querySelectorAll('.flex.flex-col.items-center .text-amber-500')[0].innerText = (data.review / 1000).toFixed(1) + 'K';
+                document.querySelectorAll('.flex.flex-col.items-center .text-primary-fixed')[0].innerText = total.toLocaleString();
+                document.querySelectorAll('.flex.flex-col.items-center .text-primary-fixed')[1].innerText = match.toLocaleString();
+                document.querySelectorAll('.flex.flex-col.items-center .text-amber-500')[0].innerText = review.toLocaleString();
+                
+                // Update hero safe automation
+                const safeAuto = (parseFloat(devData.safe_automation_pct) * 100).toFixed(1);
+                document.querySelector('.font-headline-lg.text-headline-lg').innerHTML = `
+                    Safe Automation: ${safeAuto}%
+                    <span class="w-3 h-3 rounded-full bg-primary-fixed-dim shadow-[0_0_10px_2px_rgba(0,255,204,0.5)] animate-pulse"></span>
+                `;
             }
         } catch (error) {
             console.error('Failed to fetch latest results:', error);
@@ -547,7 +562,5 @@ void main() {
     
     // Trigger on load
     fetchLatestResults();
-    // Poll every 5 seconds
-    setInterval(fetchLatestResults, 5000);
 </script>
 </body></html>

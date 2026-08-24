@@ -1,0 +1,6 @@
+Metric,Original_P1,Final_P7,Absolute_Delta
+MATCH count,68,361,293
+Safe Automation %,0.1511,0.8022222222222222,0.6511222222222222
+Value Coverage %,0.142,0.8152986863504039,0.6732986863504039
+Precision,1.0,1.0,0.0
+False Auto-Match %,0.0,0.0,0.0

@@ -29,12 +29,12 @@ from app.matching.deterministic import DeterministicMatcher
 from app.matching.fuzzy import FuzzyMatcher
 from app.matching.evidence import EvidenceFeatureBuilder, compute_rarity_frequencies
 from app.matching.evidence_weighted import EvidenceWeightedScorer
+from app.matching.allocator import OneToNAllocator
+from app.controls.engine import FinancialControlEngine
 from app.matching.llm import LLMEvidenceGenerator
 from app.matching.semantic import SemanticFeatureBuilder
 from app.blocking import CompoundBlocker
 from app.allocation.one_to_one import OneToOneAllocator
-from app.allocation.one_to_n import OneToNAllocator
-from app.controls.engine import FinancialControlEngine
 from app.decision import DecisionEngine
 
 logger = logging.getLogger(__name__)
@@ -133,7 +133,10 @@ class ReconciliationPipeline:
 
     def __init__(self, config: dict | None = None, rarity_frequencies: dict | None = None, disabled_stages: set[str] | None = None):
         self.config = config or load_config()
-        self.disabled_stages = disabled_stages or set()
+        if disabled_stages is not None:
+            self.disabled_stages = disabled_stages
+        else:
+            self.disabled_stages = set(self.config.get('matching', {}).get('disabled_stages', []))
         self.det = DeterministicMatcher(self.config)
         self.fuzz = FuzzyMatcher(self.config)
         self.evb = EvidenceFeatureBuilder(self.config, rarity_frequencies)
@@ -332,8 +335,47 @@ class ReconciliationPipeline:
                         'route_to_review': r.uncertainty_level == 'HIGH'
                     }
 
-        # Phase 3: Finalization & Controls
+        # Phase 2.5: One-To-N Allocation Grouping
+        allocator = OneToNAllocator(self.config)
+        valid_groups = allocator.group_and_validate(scored_records)
+        for group in valid_groups:
+            ctrl_ctx = self._build_group_control_context(group, allocated_sids)
+            ctrl_results = self.controls.run_all(ctrl_ctx)
+            failed = [r for r in ctrl_results if r.status == 'FAIL']
+            
+            banks = [r for r in group if r['source'] == 'BANK']
+            primary_bank_sid = banks[0]['source_record_id'] if banks else group[0]['source_record_id']
+            
+            for r in group:
+                chosen_sid = primary_bank_sid if r['source_record_id'] != primary_bank_sid else group[-1]['source_record_id']
+                if chosen_sid == r['source_record_id']:
+                    chosen_sid = group[0]['source_record_id'] if len(group)>1 else None
+                    
+                if failed:
+                    decisions.append(DecisionRecord(
+                        source_event_id=r['source_record_id'], source=r['source'],
+                        amount_minor_units=r.get('amount_minor_units', 0), currency=r.get('currency', 'INR'),
+                        action='REVIEW', primary_reason='CONTROL_FAIL',
+                        control_result='FAIL: ' + ','.join(cr.control_id for cr in failed),
+                        chosen_candidate_sid=chosen_sid, confidence=1.0, risk_exposure_score=self._risk(r, 'REVIEW'),
+                        llm_provider=None
+                    ))
+                else:
+                    decisions.append(DecisionRecord(
+                        source_event_id=r['source_record_id'], source=r['source'],
+                        amount_minor_units=r.get('amount_minor_units', 0), currency=r.get('currency', 'INR'),
+                        action='MATCH', primary_reason='CANDIDATE_MATCH',
+                        control_result='PASS', chosen_candidate_sid=chosen_sid,
+                        confidence=1.0, risk_exposure_score=0.0, llm_provider=None
+                    ))
+                    allocated_sids.add(r['source_record_id'])
+                processed_sids.add(r['source_record_id'])
+
+        # Phase 3: Finalization & Controls (for ungrouped records)
         for sid, (rec, ranked) in scored_records.items():
+            if sid in processed_sids:
+                continue
+                
             top = ranked[0]
             
             provider_audit = None
@@ -500,6 +542,28 @@ class ReconciliationPipeline:
         if bank_record and gw_record:
             ctx['bank_credit_minor'] = bank_record.get('amount_minor_units', 0)
 
+        return ctx
+
+    def _build_group_control_context(self, group_recs: list, allocated_sids: set) -> dict:
+        ctx = {}
+        ctx['proposed_allocation_lines'] = [{'source_record_id': r['source_record_id']} for r in group_recs]
+        ctx['existing_allocated_ids'] = allocated_sids
+        ctx['currencies'] = [r.get('currency', 'INR') for r in group_recs]
+        sources = [r.get('source') for r in group_recs]
+        ctx['source_a'] = sources[0] if len(sources) > 0 else None
+        ctx['source_b'] = sources[1] if len(sources) > 1 else None
+        ctx['proposed_source_record_ids'] = {r['source_record_id'] for r in group_recs}
+        ctx['deduplicated_source_event_ids'] = set()
+        gw_records = [r for r in group_recs if r.get('source') == 'GATEWAY']
+        if gw_records:
+            payload = gw_records[0].get('raw_payload', {})
+            ctx['gateway_gross_minor'] = payload.get('gateway_gross_minor', 0)
+            ctx['gateway_fee_minor'] = payload.get('gateway_fee_minor', 0)
+            ctx['gateway_tax_minor'] = payload.get('gateway_tax_minor', 0)
+            ctx['gateway_net_minor'] = gw_records[0].get('amount_minor_units', 0)
+        bank_records = [r for r in group_recs if r.get('source') == 'BANK']
+        if bank_records and gw_records:
+            ctx['bank_credit_minor'] = bank_records[0].get('amount_minor_units', 0)
         return ctx
 
     def _risk(self, rec: dict, action: str) -> float:

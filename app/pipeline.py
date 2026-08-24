@@ -279,10 +279,25 @@ class ReconciliationPipeline:
                 processed_sids.add(sid)
                 continue
 
-            ranked = self.scorer.rank_candidates(sid, candidate_evidences)
+            if 'D_SCORER' in self.disabled_stages:
+                ranked = []
+                for ev in candidate_evidences:
+                    score = ev.get('fuzzy_score', 0.0)
+                    if ev.get('deterministic_match'):
+                        score = 1.0
+                    ranked.append({**ev, 'probabilistic_confidence': score})
+                ranked.sort(key=lambda x: x['probabilistic_confidence'], reverse=True)
+                for i, c in enumerate(ranked):
+                    if i + 1 < len(ranked):
+                        c['confidence_gap_to_next'] = c['probabilistic_confidence'] - ranked[i+1]['probabilistic_confidence']
+                    else:
+                        c['confidence_gap_to_next'] = c['probabilistic_confidence']
+            else:
+                ranked = self.scorer.rank_candidates(sid, candidate_evidences)
+                
             scored_records[sid] = (rec, ranked)
             
-            if self.llm.should_invoke(ranked, 0):  # Calls used checked in batcher
+            if 'E_LLM' not in self.disabled_stages and self.llm.should_invoke(ranked, 0):  # Calls used checked in batcher
                 llm_eligible_groups.append({
                     'source_record': rec,
                     'top_candidates': ranked[:2]
@@ -380,9 +395,12 @@ class ReconciliationPipeline:
                 continue
 
             # Run controls over proposed allocation
-            ctrl_ctx = self._build_control_context(rec, cand_rec, allocated_sids)
-            ctrl_results = self.controls.run_all(ctrl_ctx)
-            failed = [r for r in ctrl_results if r.status == 'FAIL']
+            if 'F_VERIFIER' in self.disabled_stages:
+                failed = []
+            else:
+                ctrl_ctx = self._build_control_context(rec, cand_rec, allocated_sids)
+                ctrl_results = self.controls.run_all(ctrl_ctx)
+                failed = [r for r in ctrl_results if r.status == 'FAIL']
 
             if failed:
                 decisions.append(DecisionRecord(

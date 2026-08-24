@@ -1,0 +1,99 @@
+
+RazorLedger — End-to-End 150-Event Reconciliation Run
+Constitution rule 9: these are REAL numbers from a frozen run.
+No numbers are manufactured or reused from planning documents.
+
+
+════════════════════════════════════════════════════════════
+  RazorLedger — Run Scorecard: DEV
+════════════════════════════════════════════════════════════
+  Economic events total:    150
+  Events fully resolved:      0
+────────────────────────────────────────────────────────────
+  Source records total :    454  (150 events × 3 sources)
+  Deduplicated         :      4  (idempotency catches)
+  Accepted into pipeline:   450
+────────────────────────────────────────────────────────────
+  Decisions total      :    450
+  MATCH (auto-resolved):     68  (  15.1%)
+  REVIEW               :    376  (  83.6%)
+  NO_MATCH             :      0  (   0.0%)
+  PENDING              :      6  (   1.3%)
+  Non-automated total  :    382  (  84.9%)
+────────────────────────────────────────────────────────────
+  Blocking: naive=67,500  candidates=3,731  reduction=18.1x
+────────────────────────────────────────────────────────────
+  HERO METRICS (in priority order):
+  1. Safe automation rate    :   15.1%
+  2. Value coverage          :   14.2%  (₹6,126,956 of ₹43,137,102)
+  3. False auto-match rate   :    0.0%  (0 wrong auto-matches)
+  4. Review rate             :   83.6%
+  5. Adversarial holdout     :     N/A (P1)
+────────────────────────────────────────────────────────────
+  True matches (verified)  :     68
+  False auto-matches       :      0
+════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════
+  RazorLedger — Run Scorecard: VALIDATION
+════════════════════════════════════════════════════════════
+  Economic events total:    150
+  Events fully resolved:      0
+────────────────────────────────────────────────────────────
+  Source records total :    454  (150 events × 3 sources)
+  Deduplicated         :      4  (idempotency catches)
+  Accepted into pipeline:   450
+────────────────────────────────────────────────────────────
+  Decisions total      :    450
+  MATCH (auto-resolved):     63  (  14.0%)
+  REVIEW               :    379  (  84.2%)
+  NO_MATCH             :      0  (   0.0%)
+  PENDING              :      8  (   1.8%)
+  Non-automated total  :    387  (  86.0%)
+────────────────────────────────────────────────────────────
+  Blocking: naive=67,500  candidates=3,852  reduction=17.5x
+────────────────────────────────────────────────────────────
+  HERO METRICS (in priority order):
+  1. Safe automation rate    :   14.0%
+  2. Value coverage          :   14.4%  (₹5,817,327 of ₹40,422,150)
+  3. False auto-match rate   :    0.0%  (0 wrong auto-matches)
+  4. Review rate             :   84.2%
+  5. Adversarial holdout     :     N/A (P1)
+────────────────────────────────────────────────────────────
+  True matches (verified)  :     63
+  False auto-matches       :      0
+════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════
+  RazorLedger — Run Scorecard: ADVERSARIAL_HOLDOUT
+════════════════════════════════════════════════════════════
+  Economic events total:    150
+  Events fully resolved:      0
+────────────────────────────────────────────────────────────
+  Source records total :    454  (150 events × 3 sources)
+  Deduplicated         :      4  (idempotency catches)
+  Accepted into pipeline:   450
+────────────────────────────────────────────────────────────
+  Decisions total      :    450
+  MATCH (auto-resolved):     70  (  15.6%)
+  REVIEW               :    374  (  83.1%)
+  NO_MATCH             :      0  (   0.0%)
+  PENDING              :      6  (   1.3%)
+  Non-automated total  :    380  (  84.4%)
+────────────────────────────────────────────────────────────
+  Blocking: naive=67,500  candidates=3,830  reduction=17.6x
+────────────────────────────────────────────────────────────
+  HERO METRICS (in priority order):
+  1. Safe automation rate    :   15.6%
+  2. Value coverage          :   15.9%  (₹6,736,645 of ₹42,262,508)
+  3. False auto-match rate   :    0.0%  (0 wrong auto-matches)
+  4. Review rate             :   83.1%
+  5. Adversarial holdout     :     N/A (P1)
+────────────────────────────────────────────────────────────
+  True matches (verified)  :     70
+  False auto-matches       :      0
+════════════════════════════════════════════════════════════
+
+FROZEN_UNSEEN skipped (reserved for final evaluation).

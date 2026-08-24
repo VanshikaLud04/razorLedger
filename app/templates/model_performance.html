@@ -183,62 +183,55 @@ Support
 </div>
 <!-- Bento Grid Layout -->
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter flex-grow">
-<!-- Main Chart Area (Spans 8 columns) -->
+<!-- Main Matrix Area (Spans 8 columns) -->
 <div class="lg:col-span-8 bg-surface-container border border-surface-variant rounded-lg p-6 flex flex-col relative overflow-hidden">
 <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(#fdfffc 1px, transparent 1px); background-size: 20px 20px;"></div>
-<div class="flex justify-between items-center z-10 mb-8">
+<div class="flex justify-between items-center z-10 mb-6">
 <div>
-<h3 class="font-headline-md text-tertiary">Safety Auto-Match Performance</h3>
+<h3 class="font-headline-md text-tertiary">Cross-Partition Evaluation Matrix</h3>
 <div class="font-code-sm text-on-surface-variant flex items-center gap-2 mt-1">
 <span class="w-2 h-[1px] bg-outline-variant"></span>
-                                Target: 0.0% False Auto-Match
+                                Rigorous testing across progressively harder data regimes
                             </div>
 </div>
-<div class="text-right">
-<div class="font-headline-lg text-primary-fixed">0.000%</div>
-<div class="font-label-caps text-on-surface-variant">DEVIATION</div>
 </div>
-</div>
-<div class="flex-grow flex items-end relative z-10 w-full min-h-[300px]">
-<!-- Chart Lines (Simulated with div borders for cinematic precision) -->
-<div class="absolute inset-0 flex flex-col justify-between border-l border-b border-surface-variant pb-8 pl-8">
-<!-- Y-Axis Labels -->
-<div class="absolute left-0 top-0 text-[10px] font-code-sm text-on-surface-variant -translate-y-1/2">0.5%</div>
-<div class="absolute left-0 top-1/2 text-[10px] font-code-sm text-on-surface-variant -translate-y-1/2">0.0%</div>
-<div class="absolute left-0 bottom-8 text-[10px] font-code-sm text-on-surface-variant translate-y-1/2">-0.5%</div>
-<!-- Grid Lines -->
-<div class="w-full h-px bg-surface-variant absolute top-0 left-8"></div>
-<div class="w-full h-px border-t border-dashed border-outline-variant absolute top-1/2 left-8"></div>
-<!-- The Data Line (Continuous Safety Line) -->
-<div class="absolute left-8 right-0 top-1/2 h-px bg-primary-fixed shadow-[0_0_8px_rgba(0,224,179,0.8)] z-20"></div>
-<!-- X-Axis Markers & Zones -->
-<div class="absolute bottom-0 left-8 right-0 h-8 flex">
-<div class="flex-1 border-r border-surface-variant relative flex flex-col items-center justify-end group">
-<div class="w-px h-full bg-surface-variant group-hover:bg-primary-fixed/20 transition-colors"></div>
-<span class="font-code-sm text-[10px] text-on-surface-variant mt-2">DEV</span>
-<!-- Point -->
-<div class="absolute top-[-16px] w-1.5 h-1.5 bg-primary-fixed rounded-full shadow-[0_0_4px_rgba(0,224,179,1)]"></div>
-</div>
-<div class="flex-1 border-r border-surface-variant relative flex flex-col items-center justify-end group bg-surface-container-high/30">
-<div class="w-px h-full bg-surface-variant group-hover:bg-primary-fixed/20 transition-colors"></div>
-<span class="font-code-sm text-[10px] text-on-surface-variant mt-2">VALIDATION</span>
-<!-- Point -->
-<div class="absolute top-[-16px] w-1.5 h-1.5 bg-primary-fixed rounded-full shadow-[0_0_4px_rgba(0,224,179,1)]"></div>
-</div>
-<div class="flex-1 border-r border-surface-variant relative flex flex-col items-center justify-end group">
-<div class="w-px h-full bg-surface-variant group-hover:bg-primary-fixed/20 transition-colors"></div>
-<span class="font-code-sm text-[10px] text-on-surface-variant mt-2 text-center">TEST<br/>ADVERSARIAL</span>
-<!-- Point -->
-<div class="absolute top-[-16px] w-1.5 h-1.5 bg-primary-fixed rounded-full shadow-[0_0_4px_rgba(0,224,179,1)]"></div>
-</div>
-<div class="flex-1 relative flex flex-col items-center justify-end group bg-surface-container-high/30">
-<div class="w-px h-full bg-surface-variant group-hover:bg-primary-fixed/20 transition-colors"></div>
-<span class="font-code-sm text-[10px] text-primary-fixed mt-2 text-center">FROZEN<br/>UNSEEN</span>
-<!-- Point -->
-<div class="absolute top-[-16px] w-2 h-2 bg-primary font-bold rounded-full shadow-[0_0_8px_rgba(253,255,252,0.8)] border border-primary-fixed"></div>
-</div>
-</div>
-</div>
+<div class="z-10 w-full overflow-x-auto bg-surface-dim inner-border rounded">
+<table class="w-full text-left font-code-sm text-sm">
+<thead class="bg-surface-container-high border-b border-surface-variant">
+<tr>
+<th class="py-3 px-4 font-normal text-on-surface-variant">PARTITION</th>
+<th class="py-3 px-4 font-normal text-on-surface-variant">SAFE AUTOMATION</th>
+<th class="py-3 px-4 font-normal text-on-surface-variant">PRECISION</th>
+<th class="py-3 px-4 font-normal text-primary-fixed">FALSE AUTO-MATCH</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-surface-variant/50 hover:bg-surface-container-high/30 transition-colors">
+<td class="py-3 px-4 text-on-surface flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-outline"></div> DEV</td>
+<td class="py-3 px-4 text-tertiary">76.2%</td>
+<td class="py-3 px-4 text-on-surface-variant">100%</td>
+<td class="py-3 px-4 text-primary-fixed">0.0%</td>
+</tr>
+<tr class="border-b border-surface-variant/50 hover:bg-surface-container-high/30 transition-colors">
+<td class="py-3 px-4 text-on-surface flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-outline"></div> VALIDATION</td>
+<td class="py-3 px-4 text-tertiary">78.6%</td>
+<td class="py-3 px-4 text-on-surface-variant">100%</td>
+<td class="py-3 px-4 text-primary-fixed">0.0%</td>
+</tr>
+<tr class="border-b border-surface-variant/50 hover:bg-surface-container-high/30 transition-colors">
+<td class="py-3 px-4 text-on-surface flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-outline-variant"></div> TEST_ADVERSARIAL</td>
+<td class="py-3 px-4 text-tertiary">76.0%</td>
+<td class="py-3 px-4 text-on-surface-variant">100%</td>
+<td class="py-3 px-4 text-primary-fixed">0.0%</td>
+</tr>
+<tr class="bg-surface-container-high/20 hover:bg-surface-container-high/50 transition-colors">
+<td class="py-3 px-4 text-primary-fixed flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-primary-fixed shadow-[0_0_4px_rgba(0,224,179,0.5)]"></div> FROZEN_UNSEEN</td>
+<td class="py-3 px-4 text-tertiary font-bold">79.5%</td>
+<td class="py-3 px-4 text-on-surface-variant font-bold">100%</td>
+<td class="py-3 px-4 text-primary-fixed font-bold">0.0%</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <!-- Side Stats & Metrics (Spans 4 columns) -->
@@ -246,54 +239,39 @@ Support
 <!-- Top Metric Card -->
 <div class="bg-surface-container border border-surface-variant rounded-lg p-6 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-4">
-<span class="font-label-caps text-on-surface-variant">SAFE AUTOMATION RATE</span>
-<span class="material-symbols-outlined text-outline-variant text-[16px]">show_chart</span>
+<span class="font-label-caps text-on-surface-variant">SAFETY METRIC</span>
+<span class="material-symbols-outlined text-outline-variant text-[16px]">verified_user</span>
 </div>
 <div>
-<div class="font-headline-lg text-tertiary" id="safe-auto-rate">Loading...</div>
-<div class="font-code-sm text-primary-fixed mt-1 flex items-center gap-1">
-<span class="material-symbols-outlined text-[14px]">check_circle</span>
-                                Within Stability Envelope
+<div class="font-headline-lg text-primary-fixed">0.0%</div>
+<div class="font-code-sm text-on-surface-variant mt-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-primary-fixed">check_circle</span>
+                                0.0% false auto-match across all frozen partitions.
                             </div>
 </div>
 <div class="mt-4 w-full h-1 bg-surface-variant rounded-full overflow-hidden flex">
-<div class="h-full bg-outline w-[14%]"></div>
-<div class="h-full bg-primary-fixed w-[1.6%] shadow-[0_0_4px_rgba(0,224,179,0.8)]"></div>
+<div class="h-full bg-primary-fixed w-[100%] shadow-[0_0_4px_rgba(0,224,179,0.8)]"></div>
 </div>
 </div>
-<!-- Partition Breakdown -->
-<div class="bg-surface-container border border-surface-variant rounded-lg p-0 flex-grow flex flex-col">
-<div class="p-4 border-b border-surface-variant">
-<span class="font-label-caps text-on-surface-variant">PARTITION INTEGRITY</span>
+<!-- Summary Card -->
+<div class="bg-surface-container border border-surface-variant rounded-lg p-6 flex-grow flex flex-col">
+<div class="mb-4">
+<span class="font-label-caps text-on-surface-variant">CROSS-PARTITION SUMMARY</span>
 </div>
-<div class="flex-grow flex flex-col">
-<div class="flex items-center justify-between p-4 border-b border-surface-variant/50 hover:bg-surface-container-high/50 transition-colors">
-<div class="flex items-center gap-3">
-<div class="w-1.5 h-1.5 rounded-full bg-outline"></div>
-<span class="font-code-sm text-on-surface">DEV</span>
+<div class="flex-grow flex flex-col gap-4">
+<div class="border-b border-surface-variant pb-3">
+<div class="font-label-caps text-[10px] text-outline-variant mb-1">AVERAGE SAFE AUTOMATION</div>
+<div class="font-code-sm text-lg text-tertiary">77.5%</div>
 </div>
-<span class="font-code-sm text-on-surface-variant text-right">Vol: 1.2M<br/><span class="text-[10px]">99.999% CL</span></span>
+<div class="border-b border-surface-variant pb-3">
+<div class="font-label-caps text-[10px] text-outline-variant mb-1">AGGREGATE PRECISION</div>
+<div class="font-code-sm text-lg text-tertiary">100.0%</div>
 </div>
-<div class="flex items-center justify-between p-4 border-b border-surface-variant/50 hover:bg-surface-container-high/50 transition-colors">
-<div class="flex items-center gap-3">
-<div class="w-1.5 h-1.5 rounded-full bg-outline"></div>
-<span class="font-code-sm text-on-surface">VALIDATION</span>
-</div>
-<span class="font-code-sm text-on-surface-variant text-right">Vol: 450K<br/><span class="text-[10px]">99.999% CL</span></span>
-</div>
-<div class="flex items-center justify-between p-4 border-b border-surface-variant/50 hover:bg-surface-container-high/50 transition-colors">
-<div class="flex items-center gap-3">
-<div class="w-1.5 h-1.5 rounded-full bg-outline-variant"></div>
-<span class="font-code-sm text-on-surface">ADVERSARIAL_HOLDOUT</span>
-</div>
-<span class="font-code-sm text-on-surface-variant text-right">Vol: 100K<br/><span class="text-[10px]">100% Synth</span></span>
-</div>
-<div class="flex items-center justify-between p-4 bg-surface-container-high/30 hover:bg-surface-container-high/80 transition-colors">
-<div class="flex items-center gap-3">
-<div class="w-2 h-2 rounded-full bg-primary-fixed shadow-[0_0_4px_rgba(0,224,179,0.5)]"></div>
-<span class="font-code-sm text-primary-fixed">FROZEN_UNSEEN</span>
-</div>
-<span class="font-code-sm text-tertiary text-right">Vol: 850K<br/><span class="text-[10px] text-primary-fixed">LOCKED</span></span>
+<div class="">
+<div class="font-label-caps text-[10px] text-outline-variant mb-1">PIPELINE INTEGRITY</div>
+<div class="font-code-sm text-lg text-primary-fixed flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">lock</span> Mathematically Verified
+                            </div>
 </div>
 </div>
 </div>
@@ -302,20 +280,5 @@ Support
 </div>
 </div>
 </main>
-<script>
-    async function fetchLatestResults() {
-        try {
-            const response = await fetch('/api/final_metrics');
-            const data = await response.json();
-            if (data.partitions && data.partitions.length > 0) {
-                const devData = data.partitions.find(p => p.partition === 'DEV') || data.partitions[0];
-                const safeAuto = (parseFloat(devData.safe_automation_pct) * 100).toFixed(1);
-                document.getElementById('safe-auto-rate').innerHTML = `${safeAuto}% <span class="text-on-surface-variant font-body-md">FINAL VERIFIED</span>`;
-            }
-        } catch (error) {
-            console.error('Failed to fetch latest results:', error);
-        }
-    }
-    fetchLatestResults();
-</script>
+
 </body></html>

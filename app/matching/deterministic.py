@@ -25,12 +25,10 @@ class DeterministicMatcher:
             if date_a is not None and date_b is not None and date_a == date_b:
                 is_exact_amount_date_match = True
                 
-        deterministic_match = is_exact_reference_match or is_exact_amount_date_match
+        deterministic_match = is_exact_reference_match
         
         if is_exact_reference_match:
             match_type = 'EXACT_REFERENCE'
-        elif is_exact_amount_date_match:
-            match_type = 'EXACT_AMOUNT_DATE'
         else:
             match_type = 'NONE'
             

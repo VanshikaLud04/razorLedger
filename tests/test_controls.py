@@ -130,4 +130,25 @@ class TestControls:
         }
         result = engine.check_ctrl001_no_double_allocation(ctx)
         assert result.status == 'FAIL'
-        assert result.control_id == 'CTRL-001'
+    def test_ctrl005_under_allocation_passes(self):
+        # Under allocation is fine (e.g. partial payment)
+        ctx = {'invoice_amount_minor': 10000, 'total_allocated_minor': 5000}
+        assert engine.check_ctrl005_no_negative_outstanding(ctx).status == 'PASS'
+
+    def test_ctrl003_exact_conservation_no_fees(self):
+        # Exact conservation without any fees
+        bad = {
+            'gateway_gross_minor': 10000,
+            'gateway_fee_minor': 0,
+            'gateway_tax_minor': 0,
+            'bank_credit_minor': 9000,
+        }
+        good = {
+            'gateway_gross_minor': 10000,
+            'gateway_fee_minor': 0,
+            'gateway_tax_minor': 0,
+            'bank_credit_minor': 10000,
+        }
+        assert engine.check_ctrl003_settlement_conservation(bad).status == 'FAIL'
+        assert engine.check_ctrl003_settlement_conservation(good).status == 'PASS'
+

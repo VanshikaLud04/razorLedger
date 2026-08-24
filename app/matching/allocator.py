@@ -63,8 +63,55 @@ class OneToNAllocator:
                 valid_components.append(comp_recs)
             except ComponentRejection as e:
                 logger.info(f"Rejected component {comp}: {e}")
+                # Decomposition attempt:
+                valid_subs = self._decompose_component(comp_recs, edges)
+                if valid_subs:
+                    valid_components.extend(valid_subs)
                 
         return valid_components
+
+    def _decompose_component(self, comp_recs: List[Dict], edges: Dict[Tuple[str, str], float]) -> List[List[Dict]]:
+        if len(comp_recs) > self.max_component_size:
+            return []
+            
+        all_valid_subsets = []
+        for size in range(len(comp_recs) - 1, 1, -1):
+            for subset in itertools.combinations(comp_recs, size):
+                subset_list = list(subset)
+                try:
+                    self._validate_component(subset_list, edges)
+                    all_valid_subsets.append(subset_list)
+                except ComponentRejection:
+                    pass
+                    
+        # Filter maximal valid subsets (subsets not contained in any other valid subset)
+        maximal = []
+        for s1 in all_valid_subsets:
+            s1_ids = {r['source_record_id'] for r in s1}
+            is_maximal = True
+            for s2 in all_valid_subsets:
+                if s1 is s2: continue
+                s2_ids = {r['source_record_id'] for r in s2}
+                if s1_ids.issubset(s2_ids):
+                    is_maximal = False
+                    break
+            if is_maximal:
+                maximal.append(s1)
+                
+        if not maximal:
+            return []
+            
+        # Check for ambiguity: do any maximal subsets overlap?
+        # If they share a record, it means one record could legitimately belong to multiple valid allocations. 
+        # This is ambiguous -> reject decomposition entirely.
+        for i in range(len(maximal)):
+            for j in range(i + 1, len(maximal)):
+                s1_ids = {r['source_record_id'] for r in maximal[i]}
+                s2_ids = {r['source_record_id'] for r in maximal[j]}
+                if s1_ids.intersection(s2_ids):
+                    return []
+                    
+        return maximal
 
     def _validate_component(self, comp: List[Dict], edges: Dict[Tuple[str, str], float]):
         # 1. Size constraint

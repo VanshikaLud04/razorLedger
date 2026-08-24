@@ -11,7 +11,7 @@ class FuzzyMatcher:
         def norm_str(s):
             if not s:
                 return None
-            return str(s).strip().lower()
+            return str(s).lower().replace(' ', '').replace('-', '').replace('_', '').replace('.', '')
             
         ref_a = norm_str(record_a.get('reference'))
         ref_b = norm_str(record_b.get('reference'))
@@ -54,7 +54,15 @@ class FuzzyMatcher:
         ]
         composite_cp = max(cp_scores) / 100.0 if cp_scores else 0.0
         
+        desc_a = norm_str(record_a.get('description'))
+        desc_b = norm_str(record_b.get('description'))
+        composite_desc = 0.0
+        if desc_a and desc_b:
+            # Using token_set_ratio which handles prefixes like "Invoice: " and "Gateway settlement: " effectively
+            composite_desc = fuzz.token_set_ratio(desc_a, desc_b) / 100.0
+        
         scores['reference_similarity_score'] = composite_ref
         scores['counterparty_similarity_score'] = composite_cp
+        scores['description_similarity_score'] = composite_desc
         
         return scores

@@ -1,0 +1,7 @@
+step,description,configuration,allocator_state,metrics_dev_matches,safety_false_matches,decision
+Baseline,Phase 6 optimization baseline,threshold=0.80,OneToNAllocator integrated (strict 0.80 edge),317,0,BASELINE
+Exp 1,Missing-Evidence Plumbing (memo/description),threshold=0.80,integrated,317,0,RETAINED
+Exp 2,Safe Punctuation Normalization (strip -, _, etc.),threshold=0.80,integrated,322,0,RETAINED
+Exp 3,Secondary Amount+Date Blocking,threshold=0.80,integrated,322,0,RETAINED
+Exp 4,Prefix Normalization (INV-, TXN-),threshold=0.80,integrated,N/A,N/A,BLOCKED
+Exp 5,Bounded Allocator Decomposition,threshold=0.80,decomposition enabled,343,0,RETAINED

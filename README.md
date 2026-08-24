@@ -2,7 +2,7 @@
 
 **Status:** Final Freeze (Phase 7)
 **Primary Architecture:** `OneToNAllocator` + `FinancialControlEngine`
-**Safe Automation Rate:** 80.2% (DEV) | 84.7% (FROZEN_UNSEEN)
+**Safe Automation Rate:** 76.2% (DEV) | 79.5% (FROZEN_UNSEEN)
 **False Auto-Match Rate:** 0.0%
 
 ## Problem
@@ -23,14 +23,14 @@ The final locked pipeline architecture is as follows:
 ## Final Metrics (Phase 7)
 *Compared against the Phase 1 deterministic baseline on the DEV partition.*
 
-- **MATCH Count:** 68 ➔ 361 (+293)
-- **Safe Automation:** 15.1% ➔ 80.2% (+65.1%)
-- **Value Coverage:** 14.2% ➔ 81.5% (+67.3%)
+- **MATCH Count:** 68 ➔ 343 (+275)
+- **Safe Automation:** 15.1% ➔ 76.2% (+61.1%)
+- **Value Coverage:** 14.2% ➔ 77.8% (+63.6%)
 - **Precision:** 100% ➔ 100%
 - **False Auto-Match:** 0.0% ➔ 0.0%
 
 ### Adversarial and Unseen Results
-The pipeline maintained 100% precision on the `TEST_ADVERSARIAL` partition (which contained simulated hallucination traps and tax mismatches) and generalized exceptionally well to the `FROZEN_UNSEEN` partition (achieving 84.7% safe automation without any tuning).
+The pipeline maintained 100% precision on the `TEST_ADVERSARIAL` partition (which contained simulated hallucination traps and tax mismatches) and generalized exceptionally well to the `FROZEN_UNSEEN` partition (achieving 79.5% safe automation without any tuning).
 
 ## LLM Findings
 During Phase 3, we integrated a bounded LLM into Stage E to determine if Generative AI could safely boost automation. The empirical result: **0.0% safe automation lift**. The LLM could not mathematically surpass the 0.80 safety threshold for borderline cases without hallucinating. The massive 65%+ increase in automation was driven entirely by structural engineering (Evidence-Weighted Scoring and 1:N Graph Allocation).

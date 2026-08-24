@@ -24,7 +24,7 @@ The RazorLedger project evolved through a rigorous empirical process:
 **Phase 7 (Final Freeze):** We locked the architecture. 
 
 ## Final Results
-- **Automation Increase:** 15.1% -> 80.2% on DEV (84.7% on FROZEN_UNSEEN).
+- **Automation Increase:** 15.1% -> 76.2% on DEV (79.5% on FROZEN_UNSEEN).
 - **Safety:** 100% Precision / 0.0% False Auto-Match.
 - **AI Contribution:** 0%.
 

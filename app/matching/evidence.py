@@ -87,9 +87,19 @@ class EvidenceFeatureBuilder:
         else:
             counterparty_similarity_bin = 'LOW'
             
-        description_similarity_bin = 'LOW'
-        semantic_similarity_score = 0.0
-        
+        # In case semantic is disabled, we fallback to fuzzy description score
+        desc_score = fuzzy_scores.get('description_similarity_score', 0.0)
+        semantic_similarity_score = desc_score
+        if semantic_similarity_score >= 0.85:
+            semantic_similarity_bin = 'HIGH'
+            description_similarity_bin = 'HIGH'
+        elif semantic_similarity_score >= 0.70:
+            semantic_similarity_bin = 'MEDIUM'
+            description_similarity_bin = 'MEDIUM'
+        else:
+            semantic_similarity_bin = 'LOW'
+            description_similarity_bin = 'LOW'
+            
         valid_pairs = {('BANK','INVOICE'),('BANK','GATEWAY'),('INVOICE','GATEWAY'),
                        ('INVOICE','BANK'),('GATEWAY','BANK'),('GATEWAY','INVOICE')}
         source_compatibility = (record_a.get('source'), record_b.get('source')) in valid_pairs
@@ -117,6 +127,7 @@ class EvidenceFeatureBuilder:
             'counterparty_similarity_bin': counterparty_similarity_bin,
             'counterparty_similarity_score': cp_score,
             'description_similarity_bin': description_similarity_bin,
+            'semantic_similarity_bin': semantic_similarity_bin,
             'semantic_similarity_score': semantic_similarity_score,
             'source_compatibility': source_compatibility,
             'evidence_rarity_score': evidence_rarity_score,

@@ -84,6 +84,23 @@ class CompoundBlocker:
                         id1, id2 = sorted([r1['source_record_id'], r2['source_record_id']])
                         candidates.add((id1, id2))
                         
+        # Block D: exact amount + exact date
+        bucket_d = {}
+        for r in records:
+            amt = r.get('amount_minor_units')
+            date = r.get('transaction_date')
+            if amt and date:
+                bucket_d.setdefault((amt, date), []).append(r)
+                
+        for (amt, date), recs in bucket_d.items():
+            for i in range(len(recs)):
+                for j in range(i + 1, len(recs)):
+                    r1 = recs[i]
+                    r2 = recs[j]
+                    if (r1.get('source'), r2.get('source')) in valid_pairs:
+                        id1, id2 = sorted([r1['source_record_id'], r2['source_record_id']])
+                        candidates.add((id1, id2))
+                        
         candidate_count = len(candidates)
         reduction_factor = float('inf') if candidate_count == 0 else naive_comparison_count / candidate_count
         

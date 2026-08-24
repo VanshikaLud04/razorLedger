@@ -68,7 +68,7 @@ class TestDeterministicMatcher:
         a, b = make_records(ref_a='INV-001', ref_b='DIFFERENT')
         result = det.match(a, b)
         assert result['is_exact_amount_date_match'] is True
-        assert result['deterministic_match'] is True
+        assert result['deterministic_match'] is False
 
     def test_no_match(self):
         a, b = make_records(ref_a='INV-001', ref_b='INV-999',

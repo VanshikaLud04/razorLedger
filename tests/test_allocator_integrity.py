@@ -234,5 +234,40 @@ def test_all_required_edges_at_threshold_accepted():
     assert len(valid_comps) == 1
     assert len(valid_comps[0]) == 3
 
+def test_unsupported_N_to_N():
+    allocator = OneToNAllocator({'matching': {'auto_match_threshold': 0.80}})
+    b1 = {'source_record_id': 'B1', 'source': 'BANK', 'currency': 'INR', 'amount_minor_units': 500}
+    b2 = {'source_record_id': 'B2', 'source': 'BANK', 'currency': 'INR', 'amount_minor_units': 500}
+    i1 = {'source_record_id': 'I1', 'source': 'INVOICE', 'currency': 'INR', 'amount_minor_units': 500}
+    i2 = {'source_record_id': 'I2', 'source': 'INVOICE', 'currency': 'INR', 'amount_minor_units': 500}
+    
+    scored_records = {
+        'B1': (b1, [{'candidate_source_record_id': 'I1', 'candidate_record': i1, 'confidence_score': 0.95},
+                    {'candidate_source_record_id': 'I2', 'candidate_record': i2, 'confidence_score': 0.95}]),
+        'B2': (b2, [{'candidate_source_record_id': 'I1', 'candidate_record': i1, 'confidence_score': 0.95},
+                    {'candidate_source_record_id': 'I2', 'candidate_record': i2, 'confidence_score': 0.95}]),
+        'I1': (i1, [{'candidate_source_record_id': 'B1', 'candidate_record': b1, 'confidence_score': 0.95},
+                    {'candidate_source_record_id': 'B2', 'candidate_record': b2, 'confidence_score': 0.95}]),
+        'I2': (i2, [{'candidate_source_record_id': 'B1', 'candidate_record': b1, 'confidence_score': 0.95},
+                    {'candidate_source_record_id': 'B2', 'candidate_record': b2, 'confidence_score': 0.95}])
+    }
+    # N:N is unsupported, must return 0 valid components
+    assert len(allocator.group_and_validate(scored_records)) == 0
+
+def test_double_weak_bridge():
+    allocator = OneToNAllocator({'matching': {'auto_match_threshold': 0.80}})
+    b = {'source_record_id': 'B1', 'source': 'BANK', 'currency': 'INR', 'amount_minor_units': 1000}
+    g = {'source_record_id': 'G1', 'source': 'GATEWAY', 'currency': 'INR', 'amount_minor_units': 1000}
+    i = {'source_record_id': 'I1', 'source': 'INVOICE', 'currency': 'INR', 'amount_minor_units': 1000}
+    
+    # B-G weak, G-I weak
+    scored_records = {
+        'B1': (b, [{'candidate_source_record_id': 'G1', 'candidate_record': g, 'confidence_score': 0.70}]),
+        'G1': (g, [{'candidate_source_record_id': 'B1', 'candidate_record': b, 'confidence_score': 0.70},
+                   {'candidate_source_record_id': 'I1', 'candidate_record': i, 'confidence_score': 0.70}]),
+        'I1': (i, [{'candidate_source_record_id': 'G1', 'candidate_record': g, 'confidence_score': 0.70}])
+    }
+    assert len(allocator.group_and_validate(scored_records)) == 0
+
 if __name__ == '__main__':
     pytest.main([__file__])

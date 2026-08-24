@@ -18,7 +18,7 @@ def test_transitive_graph_trap():
                          {'candidate_source_record_id': 'B1', 'candidate_record': bank, 'confidence_score': 0.42}])
     }
     
-    # Should not produce a valid component because of the transitive trap B-I = 0.42 < 0.50
+    # Should not produce a valid component because of the transitive trap B-I = 0.42 < 0.80
     valid_comps = allocator.group_and_validate(scored_records)
     assert len(valid_comps) == 0
 
@@ -29,7 +29,7 @@ def test_valid_3way_match():
     gateway = {'source_record_id': 'G1', 'source': 'GATEWAY', 'currency': 'INR', 'amount_minor_units': 1000}
     invoice = {'source_record_id': 'I1', 'source': 'INVOICE', 'currency': 'INR', 'amount_minor_units': 1000}
     
-    # All edges >= 0.80 except maybe B-I which is >= 0.50
+    # All edges >= 0.80, including the direct Bank-Invoice edge
     scored_records = {
         'B1': (bank, [{'candidate_source_record_id': 'G1', 'candidate_record': gateway, 'confidence_score': 0.95},
                       {'candidate_source_record_id': 'I1', 'candidate_record': invoice, 'confidence_score': 0.85}]),
@@ -150,6 +150,89 @@ def test_candidate_in_multiple_components():
     # But this is an invalid cardinality (2 Banks, 1 Invoice with amounts 1000, 1000, 1000). Amount conservation fails!
     # B1+B2 = 2000 != 1000. So it should be rejected.
     assert len(allocator.group_and_validate(scored_records)) == 0
+
+def test_direct_edge_below_threshold_rejected():
+    """3-way component, direct Bank-Invoice edge at 0.79 -- just below the
+    canonical 0.80 threshold -- must be rejected, even though it's connected
+    to the component transitively via strong Bank-Gateway/Gateway-Invoice edges."""
+    allocator = OneToNAllocator({'matching': {'auto_match_threshold': 0.80}})
+    bank = {'source_record_id': 'B1', 'source': 'BANK', 'currency': 'INR', 'amount_minor_units': 1000}
+    gateway = {'source_record_id': 'G1', 'source': 'GATEWAY', 'currency': 'INR', 'amount_minor_units': 1000}
+    invoice = {'source_record_id': 'I1', 'source': 'INVOICE', 'currency': 'INR', 'amount_minor_units': 1000}
+    scored_records = {
+        'B1': (bank, [{'candidate_source_record_id': 'G1', 'candidate_record': gateway, 'confidence_score': 0.95},
+                      {'candidate_source_record_id': 'I1', 'candidate_record': invoice, 'confidence_score': 0.79}]),
+        'G1': (gateway, [{'candidate_source_record_id': 'B1', 'candidate_record': bank, 'confidence_score': 0.95},
+                         {'candidate_source_record_id': 'I1', 'candidate_record': invoice, 'confidence_score': 0.95}]),
+        'I1': (invoice, [{'candidate_source_record_id': 'G1', 'candidate_record': gateway, 'confidence_score': 0.95},
+                         {'candidate_source_record_id': 'B1', 'candidate_record': bank, 'confidence_score': 0.79}])
+    }
+    assert len(allocator.group_and_validate(scored_records)) == 0
+
+def test_direct_edge_at_threshold_eligible():
+    """Same shape, direct Bank-Invoice edge at exactly 0.80 -- must be accepted."""
+    allocator = OneToNAllocator({'matching': {'auto_match_threshold': 0.80}})
+    bank = {'source_record_id': 'B1', 'source': 'BANK', 'currency': 'INR', 'amount_minor_units': 1000}
+    gateway = {'source_record_id': 'G1', 'source': 'GATEWAY', 'currency': 'INR', 'amount_minor_units': 1000}
+    invoice = {'source_record_id': 'I1', 'source': 'INVOICE', 'currency': 'INR', 'amount_minor_units': 1000}
+    scored_records = {
+        'B1': (bank, [{'candidate_source_record_id': 'G1', 'candidate_record': gateway, 'confidence_score': 0.95},
+                      {'candidate_source_record_id': 'I1', 'candidate_record': invoice, 'confidence_score': 0.80}]),
+        'G1': (gateway, [{'candidate_source_record_id': 'B1', 'candidate_record': bank, 'confidence_score': 0.95},
+                         {'candidate_source_record_id': 'I1', 'candidate_record': invoice, 'confidence_score': 0.95}]),
+        'I1': (invoice, [{'candidate_source_record_id': 'G1', 'candidate_record': gateway, 'confidence_score': 0.95},
+                         {'candidate_source_record_id': 'B1', 'candidate_record': bank, 'confidence_score': 0.80}])
+    }
+    valid_comps = allocator.group_and_validate(scored_records)
+    assert len(valid_comps) == 1
+    assert len(valid_comps[0]) == 3
+
+def test_bank_gateway_edge_below_threshold_rejected():
+    """Bank<->Gateway is a previously-unchecked edge type in _validate_component
+    (implicitly relied only on graph-membership filtering). Explicit check added
+    2026-08-24 -- confirm a sub-threshold edge is rejected even if it somehow
+    reaches validation (defense in depth, not just graph-construction filtering)."""
+    allocator = OneToNAllocator({'matching': {'auto_match_threshold': 0.80}})
+    bank = {'source_record_id': 'B1', 'source': 'BANK', 'currency': 'INR', 'amount_minor_units': 1000}
+    gateway = {'source_record_id': 'G1', 'source': 'GATEWAY', 'currency': 'INR', 'amount_minor_units': 1000}
+    # Below threshold -- graph construction alone should already exclude this,
+    # this test proves it, it isn't silently let through by some other path.
+    scored_records = {
+        'B1': (bank, [{'candidate_source_record_id': 'G1', 'candidate_record': gateway, 'confidence_score': 0.79}]),
+        'G1': (gateway, [{'candidate_source_record_id': 'B1', 'candidate_record': bank, 'confidence_score': 0.79}])
+    }
+    assert len(allocator.group_and_validate(scored_records)) == 0
+
+def test_gateway_invoices_edge_below_threshold_rejected():
+    """Gateway<->Invoice(s) -- same previously-unchecked edge type, now covered."""
+    allocator = OneToNAllocator({'matching': {'auto_match_threshold': 0.80}})
+    gateway = {'source_record_id': 'G1', 'source': 'GATEWAY', 'currency': 'INR', 'amount_minor_units': 1000}
+    invoice = {'source_record_id': 'I1', 'source': 'INVOICE', 'currency': 'INR', 'amount_minor_units': 1000}
+    scored_records = {
+        'G1': (gateway, [{'candidate_source_record_id': 'I1', 'candidate_record': invoice, 'confidence_score': 0.79}]),
+        'I1': (invoice, [{'candidate_source_record_id': 'G1', 'candidate_record': gateway, 'confidence_score': 0.79}])
+    }
+    assert len(allocator.group_and_validate(scored_records)) == 0
+
+def test_all_required_edges_at_threshold_accepted():
+    """Every edge type in a 3-way component sitting exactly at threshold --
+    confirms the fix didn't make acceptance stricter than intended (0.80 is
+    inclusive, not exclusive, everywhere)."""
+    allocator = OneToNAllocator({'matching': {'auto_match_threshold': 0.80}})
+    bank = {'source_record_id': 'B1', 'source': 'BANK', 'currency': 'INR', 'amount_minor_units': 1000}
+    gateway = {'source_record_id': 'G1', 'source': 'GATEWAY', 'currency': 'INR', 'amount_minor_units': 1000}
+    invoice = {'source_record_id': 'I1', 'source': 'INVOICE', 'currency': 'INR', 'amount_minor_units': 1000}
+    scored_records = {
+        'B1': (bank, [{'candidate_source_record_id': 'G1', 'candidate_record': gateway, 'confidence_score': 0.80},
+                      {'candidate_source_record_id': 'I1', 'candidate_record': invoice, 'confidence_score': 0.80}]),
+        'G1': (gateway, [{'candidate_source_record_id': 'B1', 'candidate_record': bank, 'confidence_score': 0.80},
+                         {'candidate_source_record_id': 'I1', 'candidate_record': invoice, 'confidence_score': 0.80}]),
+        'I1': (invoice, [{'candidate_source_record_id': 'G1', 'candidate_record': gateway, 'confidence_score': 0.80},
+                         {'candidate_source_record_id': 'B1', 'candidate_record': bank, 'confidence_score': 0.80}])
+    }
+    valid_comps = allocator.group_and_validate(scored_records)
+    assert len(valid_comps) == 1
+    assert len(valid_comps[0]) == 3
 
 if __name__ == '__main__':
     pytest.main([__file__])

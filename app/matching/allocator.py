@@ -107,7 +107,14 @@ class OneToNAllocator:
             if b_amt != i_amt:
                 raise ComponentRejection("Amount conservation failed")
 
-        # 6. Transitive Graph Trap Check
+        # 6. Direct Edge Confidence Check
+        # Applied consistently at self.threshold (the canonical auto-match bar)
+        # across EVERY supported edge type. Previously the 3-way Bank-Invoice
+        # edge used a special-cased 0.50 -- lower than the 0.80 bar every other
+        # pairwise match in the system must clear -- which meant a 3-way group
+        # could auto-resolve even though its direct Bank-Invoice relationship,
+        # evaluated alone, would never individually clear auto-match. Fixed
+        # 2026-08-24 per audit: no edge type gets a weaker bar than any other.
         if is_3way:
             b_id = banks[0]['source_record_id']
             g_id = gateways[0]['source_record_id']
@@ -115,19 +122,36 @@ class OneToNAllocator:
             bg = edges.get(tuple(sorted([b_id, g_id])), 0.0)
             bi = edges.get(tuple(sorted([b_id, i_id])), 0.0)
             gi = edges.get(tuple(sorted([g_id, i_id])), 0.0)
-            if bi < 0.50:
-                raise ComponentRejection(f"Transitive trap: Bank-Invoice edge too weak ({bi})")
+            if bg < self.threshold:
+                raise ComponentRejection(f"Weak edge: Bank-Gateway is {bg} < {self.threshold}")
+            if gi < self.threshold:
+                raise ComponentRejection(f"Weak edge: Gateway-Invoice is {gi} < {self.threshold}")
+            if bi < self.threshold:
+                raise ComponentRejection(f"Weak edge: Bank-Invoice is {bi} < {self.threshold}")
         elif is_bank_to_invoices:
             b_id = banks[0]['source_record_id']
             for inv in invoices:
                 i_id = inv['source_record_id']
                 conf = edges.get(tuple(sorted([b_id, i_id])), 0.0)
                 if conf < self.threshold:
-                    raise ComponentRejection(f"Transitive trap: Bank-{i_id} edge is {conf} < {self.threshold}")
+                    raise ComponentRejection(f"Weak edge: Bank-{i_id} is {conf} < {self.threshold}")
         elif is_banks_to_invoice:
             i_id = invoices[0]['source_record_id']
             for bank in banks:
                 b_id = bank['source_record_id']
                 conf = edges.get(tuple(sorted([b_id, i_id])), 0.0)
                 if conf < self.threshold:
-                    raise ComponentRejection(f"Transitive trap: Invoice-{b_id} edge is {conf} < {self.threshold}")
+                    raise ComponentRejection(f"Weak edge: Invoice-{b_id} is {conf} < {self.threshold}")
+        elif is_bank_to_gateway:
+            b_id = banks[0]['source_record_id']
+            g_id = gateways[0]['source_record_id']
+            conf = edges.get(tuple(sorted([b_id, g_id])), 0.0)
+            if conf < self.threshold:
+                raise ComponentRejection(f"Weak edge: Bank-Gateway is {conf} < {self.threshold}")
+        elif is_gateway_to_invoices:
+            g_id = gateways[0]['source_record_id']
+            for inv in invoices:
+                i_id = inv['source_record_id']
+                conf = edges.get(tuple(sorted([g_id, i_id])), 0.0)
+                if conf < self.threshold:
+                    raise ComponentRejection(f"Weak edge: Gateway-{i_id} is {conf} < {self.threshold}")

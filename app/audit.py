@@ -27,17 +27,32 @@ class AuditLogger:
         previous_hash = 'GENESIS'
         
         if self.enabled_hash_chain:
-            # Get last hash
             query = text("SELECT current_hash FROM audit_log WHERE entity_id = :entity_id ORDER BY created_at DESC LIMIT 1")
-            # For synchronous SQLAlchemy or mock, we fetch (assuming async session here)
             result = await self.db_session.execute(query, {'entity_id': entity_id})
             row = result.fetchone()
             if row:
                 previous_hash = row[0]
                 
-        canonical_event_string = f'{run_id}|{entity_id}|{event_type}|{new_state}|{actor}|{created_at_iso}'
-        hash_input = previous_hash + canonical_event_string
-        current_hash = hashlib.sha256(hash_input.encode('utf-8')).hexdigest() if self.enabled_hash_chain else None
+        metadata = {
+            "event_type": event_type,
+            "old_state": old_state,
+            "new_state": new_state,
+            "control_result": control_result,
+            "actor": actor,
+            "matcher_version": matcher_version,
+            "prompt_version": prompt_version
+        }
+        
+        from app.audit_chain import HashChainVerifier
+        current_hash = HashChainVerifier.generate_hash(
+            entity_id=entity_id,
+            decision_id=run_id,
+            timestamp=created_at_iso,
+            action=action,
+            reason=primary_reason,
+            metadata=metadata,
+            previous_hash=previous_hash
+        ) if self.enabled_hash_chain else None
 
         insert_query = text("""
             INSERT INTO audit_log (
@@ -84,29 +99,46 @@ class AuditLogger:
         if not self.enabled_hash_chain:
             return True, "Hash chain disabled"
             
-        query = text("SELECT run_id, event_type, new_state, actor, created_at, previous_hash, current_hash FROM audit_log WHERE entity_id = :entity_id ORDER BY created_at ASC")
+        query = text("""
+            SELECT run_id, event_type, new_state, actor, created_at, previous_hash, current_hash,
+                   old_state, primary_reason, control_result, action, matcher_version, prompt_version
+            FROM audit_log WHERE entity_id = :entity_id ORDER BY created_at ASC
+        """)
         result = await self.db_session.execute(query, {'entity_id': entity_id})
         rows = result.fetchall()
         
         if not rows:
             return True, "No logs for entity"
             
-        computed_prev = 'GENESIS'
-        
+        from app.audit_chain import HashChainVerifier
+        entries = []
         for row in rows:
-            run_id, event_type, new_state, actor, created_at, prev_hash, curr_hash = row
-            
-            if prev_hash != computed_prev:
-                return False, f"Broken chain: expected prev_hash {computed_prev}, got {prev_hash}"
-                
+            run_id, event_type, new_state, actor, created_at, prev_hash, curr_hash, old_state, primary_reason, control_result, action, matcher_version, prompt_version = row
             created_at_iso = created_at.isoformat() if isinstance(created_at, datetime) else str(created_at)
             
-            canonical_event_string = f'{run_id}|{entity_id}|{event_type}|{new_state}|{actor}|{created_at_iso}'
-            expected_curr = hashlib.sha256((computed_prev + canonical_event_string).encode('utf-8')).hexdigest()
+            metadata = {
+                "event_type": event_type,
+                "old_state": old_state,
+                "new_state": new_state,
+                "control_result": control_result,
+                "actor": actor,
+                "matcher_version": matcher_version,
+                "prompt_version": prompt_version
+            }
             
-            if curr_hash != expected_curr:
-                return False, f"Broken chain: expected curr_hash {expected_curr}, got {curr_hash}"
-                
-            computed_prev = curr_hash
+            entries.append({
+                "entity_id": entity_id,
+                "decision_id": run_id,
+                "timestamp": created_at_iso,
+                "action": action,
+                "reason": primary_reason,
+                "metadata": metadata,
+                "previous_hash": prev_hash,
+                "current_hash": curr_hash
+            })
+            
+        is_verified, broken_idx, failure_reason = HashChainVerifier.verify_chain(entries)
+        if not is_verified:
+            return False, f"Broken chain at index {broken_idx}: {failure_reason}"
             
         return True, "Chain verified"

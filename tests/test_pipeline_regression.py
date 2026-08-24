@@ -1,3 +1,9 @@
+import sys
+import types
+mock_groq = types.ModuleType("groq")
+mock_groq.Groq = lambda *args, **kwargs: None
+sys.modules["groq"] = mock_groq
+
 from app.pipeline import ReconciliationPipeline
 from app.matching.llm import LLMEvidenceGenerator, LLMAssessment
 import datetime

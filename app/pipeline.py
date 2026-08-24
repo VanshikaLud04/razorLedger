@@ -207,17 +207,25 @@ class ReconciliationPipeline:
             candidate_sids = [c for c in cands_by_record.get(sid, []) if c not in allocated_sids]
             if not candidate_sids:
                 # No candidates after blocking
+                lifecycle = rec.get('lifecycle_state', '')
+                if lifecycle in ['INITIATED', 'CAPTURED', 'PARTIALLY_SETTLED']:
+                    action = 'PENDING'
+                    primary_reason = 'LIFECYCLE_PENDING_SETTLEMENT'
+                else:
+                    action = 'NO_MATCH'
+                    primary_reason = 'NO_CANDIDATE'
+                
                 decisions.append(DecisionRecord(
                     source_event_id=sid,
                     source=rec['source'],
                     amount_minor_units=rec['amount_minor_units'],
                     currency=rec['currency'],
-                    action='NO_MATCH',
-                    primary_reason='NO_CANDIDATE',
+                    action=action,
+                    primary_reason=primary_reason,
                     control_result='N/A',
                     chosen_candidate_sid=None,
                     confidence=None,
-                    risk_exposure_score=self._risk(rec, 'NO_MATCH'),
+                    risk_exposure_score=self._risk(rec, action),
                 ))
                 processed_sids.add(sid)
                 continue
@@ -242,13 +250,21 @@ class ReconciliationPipeline:
                 })
 
             if not candidate_evidences:
+                lifecycle = rec.get('lifecycle_state', '')
+                if lifecycle in ['INITIATED', 'CAPTURED', 'PARTIALLY_SETTLED']:
+                    action = 'PENDING'
+                    primary_reason = 'LIFECYCLE_PENDING_SETTLEMENT'
+                else:
+                    action = 'NO_MATCH'
+                    primary_reason = 'NO_CANDIDATE'
+                    
                 decisions.append(DecisionRecord(
                     source_event_id=sid, source=rec['source'],
                     amount_minor_units=rec['amount_minor_units'],
                     currency=rec['currency'],
-                    action='NO_MATCH', primary_reason='NO_CANDIDATE',
+                    action=action, primary_reason=primary_reason,
                     control_result='N/A', chosen_candidate_sid=None,
-                    confidence=None, risk_exposure_score=self._risk(rec, 'NO_MATCH'),
+                    confidence=None, risk_exposure_score=self._risk(rec, action),
                 ))
                 processed_sids.add(sid)
                 continue
@@ -278,12 +294,18 @@ class ReconciliationPipeline:
         max_groups = max_calls * batch_size
         selected_groups = llm_eligible_groups[:max_groups]
         
-        llm_results = []
+        llm_results = {}
         for i in range(0, len(selected_groups), batch_size):
             chunk = selected_groups[i:i+batch_size]
             chunk_results = self.llm.generate_batch(chunk, run_id=seed)
             if chunk_results:
-                llm_results.extend(chunk_results)
+                for r in chunk_results:
+                    llm_results[r.group_id] = {
+                        'llm_provider_audit': getattr(self.llm.provider, 'model', 'unknown'),
+                        'llm_invoked': True,
+                        'llm_semantic_assessment': "supports" if "CANDIDATE_1" in r.comparative_preference else ("contradicts" if "CANDIDATE_2" in r.comparative_preference else "neutral"),
+                        'route_to_review': r.uncertainty_level == 'HIGH'
+                    }
 
         # Phase 3: Finalization & Controls
         for sid, (rec, ranked) in scored_records.items():

@@ -3,8 +3,12 @@ class SemanticFeatureBuilder:
     def __init__(self, config: dict):
         self.config = config
         import json
-        with open("scratch/dev_embeddings.json", "r") as f:
-            self.emb_cache = json.load(f)
+        import os
+        if os.path.exists("scratch/dev_embeddings.json"):
+            with open("scratch/dev_embeddings.json", "r") as f:
+                self.emb_cache = json.load(f)
+        else:
+            self.emb_cache = {}
 
     def build(self, record_a: dict, record_b: dict) -> dict:
         desc_a = record_a.get('description') or ''

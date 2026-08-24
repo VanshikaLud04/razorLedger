@@ -192,6 +192,7 @@ Support
 <div class="flex gap-2">
 <span class="font-code-sm text-code-sm bg-surface-container px-2 py-1 rounded inner-border text-on-surface-variant">NODE TIER: L3</span>
 <span class="font-code-sm text-code-sm bg-error-container/20 text-error px-2 py-1 rounded inner-border">CTRL-001 FLAG</span>
+<span id="stale-indicator" class="hidden font-code-sm text-code-sm px-2 py-1 rounded inner-border"></span>
 </div>
 </div>
 <!-- Evidence Graph Area (Bento Layout) -->
@@ -241,8 +242,13 @@ Support
 <div class="md:col-span-4 flex flex-col gap-gutter">
 <!-- Audit Trail -->
 <div class="flex-1 bg-surface-container-low rounded-lg inner-border p-gutter flex flex-col">
-<h3 class="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant pb-2 mb-4">EXECUTION TRACE</h3>
-<div class="flex-1 overflow-y-auto pr-2 space-y-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant pb-2 mb-4 flex justify-between items-center">
+    <span>EXECUTION TRACE</span>
+    <div id="chain-status" class="hidden flex items-center gap-2">
+        <!-- populated by JS -->
+    </div>
+</h3>
+<div class="flex-1 overflow-y-auto pr-2 space-y-4" id="audit-trace-container">
 <div class="flex gap-3">
 <div class="flex flex-col items-center">
 <div class="w-2 h-2 rounded-full bg-outline-variant"></div>
@@ -283,7 +289,32 @@ Support
 </div>
 </div>
 </div>
+<!-- Proposed Journal Entry -->
+<div class="bg-surface-container rounded-lg inner-border p-gutter flex flex-col gap-3">
+    <div class="font-label-caps text-label-caps text-on-surface-variant mb-1 flex justify-between items-center">
+        <span>PROPOSED JOURNAL</span>
+        <span class="text-[10px] text-error font-bold tracking-wider" id="journal-approval-req"></span>
+    </div>
+    <div class="font-code-sm text-code-sm text-on-surface-variant" id="journal-reason"></div>
+    <div class="bg-surface-dim inner-border rounded overflow-hidden">
+        <table class="w-full text-left font-code-sm text-[11px]">
+            <thead class="bg-surface-container-high border-b border-outline-variant">
+                <tr>
+                    <th class="py-1.5 px-3 font-normal text-on-surface-variant">TYPE</th>
+                    <th class="py-1.5 px-3 font-normal text-on-surface-variant">ACCOUNT</th>
+                    <th class="py-1.5 px-3 font-normal text-on-surface-variant text-right">AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody id="journal-lines">
+            </tbody>
+        </table>
+    </div>
+    <div class="text-[10px] font-code-sm text-outline-variant flex justify-between">
+        <span id="journal-evidence"></span>
+        <span class="text-error" id="journal-manual-warn"></span>
+    </div>
 </div>
+
 <!-- Actions -->
 <div class="bg-surface-container rounded-lg inner-border p-gutter flex flex-col gap-3">
 <div class="font-label-caps text-label-caps text-on-surface-variant mb-1">OPERATOR RESOLUTION</div>
@@ -300,10 +331,163 @@ Support
 </div>
 </div>
 </div>
+<!-- LEDGER Q&A (Settlement Intelligence) -->
+<div class="bg-surface-container rounded-lg inner-border p-gutter flex flex-col gap-3">
+    <div class="font-label-caps text-label-caps text-primary-fixed mb-1 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[14px]">smart_toy</span>
+        LEDGER Q&A
+    </div>
+    <div class="flex flex-wrap gap-2 mb-2" id="qa-suggested-prompts">
+        <button onclick="askQA('Why was this blocked?')" class="bg-surface-dim border border-outline-variant text-on-surface-variant font-code-sm text-[10px] px-2 py-1 rounded-full hover:text-primary-fixed hover:border-primary-fixed transition-colors">Why was this blocked?</button>
+        <button onclick="askQA('Why is this in REVIEW?')" class="bg-surface-dim border border-outline-variant text-on-surface-variant font-code-sm text-[10px] px-2 py-1 rounded-full hover:text-primary-fixed hover:border-primary-fixed transition-colors">Why is this in REVIEW?</button>
+        <button onclick="askQA('Is the audit chain valid?')" class="bg-surface-dim border border-outline-variant text-on-surface-variant font-code-sm text-[10px] px-2 py-1 rounded-full hover:text-primary-fixed hover:border-primary-fixed transition-colors">Verify audit trail</button>
+        <button onclick="askQA('How many PENDING?')" class="bg-surface-dim border border-outline-variant text-on-surface-variant font-code-sm text-[10px] px-2 py-1 rounded-full hover:text-primary-fixed hover:border-primary-fixed transition-colors">How many PENDING?</button>
+    </div>
+    <div class="relative focus-within:ring-1 focus-within:ring-primary-fixed rounded flex">
+        <input id="qa-input" class="flex-1 bg-surface-container-lowest text-on-surface font-code-sm text-code-sm py-2 px-3 border border-outline-variant rounded-l focus:outline-none focus:border-primary-fixed" placeholder="Ask a question..." type="text" onkeypress="if(event.key === 'Enter') askQA()"/>
+        <button onclick="askQA()" class="bg-surface-dim border-y border-r border-outline-variant text-on-surface font-code-sm px-3 rounded-r hover:text-primary-fixed hover:border-primary-fixed transition-colors"><span class="material-symbols-outlined text-sm">send</span></button>
+    </div>
+    <div id="qa-response-area" class="hidden flex flex-col gap-2 mt-2 pt-2 border-t border-outline-variant/30">
+        <div id="qa-loading" class="hidden text-on-surface-variant font-code-sm text-xs italic">Retrieving authoritative facts...</div>
+        <div id="qa-answer-box" class="hidden">
+            <div class="font-code-sm text-xs text-on-surface mb-3" id="qa-answer-text"></div>
+            <div class="bg-surface-dim rounded p-2 mb-2">
+                <div class="font-label-caps text-[9px] text-outline-variant mb-1">GROUNDED IN</div>
+                <div id="qa-facts" class="font-code-sm text-[10px] text-on-surface-variant flex flex-col gap-1"></div>
+            </div>
+            <div class="flex justify-between items-end">
+                <div class="font-code-sm text-[9px] text-outline-variant" id="qa-sources"></div>
+                <div class="font-code-sm text-[9px] px-1.5 py-0.5 rounded" id="qa-grounding-badge"></div>
+            </div>
+        </div>
+    </div>
+<!-- THRESHOLD REPLAY (SIMULATION) -->
+<div class="bg-surface-container rounded-lg inner-border p-gutter flex flex-col gap-3">
+    <div class="font-label-caps text-label-caps text-secondary-fixed mb-1 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[14px]">tune</span>
+        THRESHOLD REPLAY (SIMULATION)
+    </div>
+    <div class="font-code-sm text-xs text-on-surface-variant mb-2">Simulate pipeline evaluation under different confidence thresholds without mutating production state.</div>
+    
+    <div class="flex items-center gap-2 mb-2">
+        <div class="flex-1">
+            <label class="block font-label-caps text-[9px] text-outline-variant mb-1">AUTO-MATCH THRESHOLD</label>
+            <input id="replay-match-thresh" type="number" step="0.01" min="0" max="1.0" value="0.95" class="w-full bg-surface-container-lowest text-on-surface font-code-sm text-code-sm py-1.5 px-2 border border-outline-variant rounded focus:outline-none focus:border-primary-fixed" />
+        </div>
+        <div class="flex-1">
+            <label class="block font-label-caps text-[9px] text-outline-variant mb-1">REVIEW THRESHOLD</label>
+            <input id="replay-review-thresh" type="number" step="0.01" min="0" max="1.0" value="0.20" class="w-full bg-surface-container-lowest text-on-surface font-code-sm text-code-sm py-1.5 px-2 border border-outline-variant rounded focus:outline-none focus:border-primary-fixed" />
+        </div>
+        <div class="flex-none pt-4">
+            <button onclick="runReplay()" id="replay-btn" class="bg-secondary-fixed text-on-secondary-fixed font-code-sm text-xs py-1.5 px-3 rounded hover:opacity-90 transition-opacity flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">play_arrow</span> Run
+            </button>
+        </div>
+    </div>
+    
+    <div id="replay-results" class="hidden flex flex-col gap-2 mt-2 pt-3 border-t border-outline-variant/30">
+        <div class="font-label-caps text-[10px] text-error flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">warning</span> SIMULATION ONLY - NO PRODUCTION STATE CHANGED</div>
+        <div class="flex justify-between bg-surface-dim p-2 rounded inner-border">
+            <div class="flex-1 text-center border-r border-outline-variant/30">
+                <div class="font-label-caps text-[9px] text-outline-variant">BASELINE MATCHES</div>
+                <div id="replay-base-match" class="font-code-sm text-sm text-on-surface"></div>
+            </div>
+            <div class="flex-1 text-center">
+                <div class="font-label-caps text-[9px] text-outline-variant">SIMULATION MATCHES</div>
+                <div id="replay-sim-match" class="font-code-sm text-sm text-primary-fixed"></div>
+            </div>
+        </div>
+        <div id="replay-diffs" class="font-code-sm text-[10px] text-on-surface-variant flex flex-col gap-1 mt-1 max-h-32 overflow-y-auto"></div>
+    </div>
+</div>
+</div>
 </div>
 </div>
 <script>
+    let currentRunId = null;
+    let currentEntityId = null;
+
+    async function runReplay() {
+        if (!currentRunId) {
+            alert("No active run context available.");
+            return;
+        }
+        
+        const matchThresh = parseFloat(document.getElementById('replay-match-thresh').value);
+        const reviewThresh = parseFloat(document.getElementById('replay-review-thresh').value);
+        
+        const btn = document.getElementById('replay-btn');
+        const origText = btn.innerHTML;
+        btn.innerHTML = `<span class="material-symbols-outlined text-[14px] animate-spin">refresh</span>`;
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch('/reconcile/replay', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    run_id: currentRunId,
+                    auto_match_threshold: matchThresh,
+                    review_threshold: reviewThresh
+                })
+            });
+            
+            if (!res.ok) {
+                const data = await res.json();
+                alert(`Replay failed: ${data.detail || res.statusText}`);
+                return;
+            }
+            
+            const data = await res.json();
+            document.getElementById('replay-results').classList.remove('hidden');
+            
+            document.getElementById('replay-base-match').innerText = data.baseline_scorecard.auto_resolved;
+            document.getElementById('replay-sim-match').innerText = data.replay_scorecard.auto_resolved;
+            
+            const diffsEl = document.getElementById('replay-diffs');
+            diffsEl.innerHTML = '';
+            
+            if (data.promoted.length > 0) {
+                diffsEl.innerHTML += `<div class="text-primary-fixed font-bold mt-2">Promoted to MATCH (${data.promoted.length})</div>`;
+                data.promoted.forEach(d => {
+                    diffsEl.innerHTML += `<div class="pl-2 border-l-2 border-primary-fixed mb-1">
+                        <div>ID: ${d.source_record_id}</div>
+                        <div>Action: ${d.baseline_action} -> ${d.replay_action}</div>
+                    </div>`;
+                });
+            }
+            if (data.demoted.length > 0) {
+                diffsEl.innerHTML += `<div class="text-error font-bold mt-2">Demoted from MATCH (${data.demoted.length})</div>`;
+                data.demoted.forEach(d => {
+                    diffsEl.innerHTML += `<div class="pl-2 border-l-2 border-error mb-1">
+                        <div>ID: ${d.source_record_id}</div>
+                        <div>Action: ${d.baseline_action} -> ${d.replay_action}</div>
+                        <div>Reason: ${d.primary_reason}</div>
+                    </div>`;
+                });
+            }
+            if (data.promoted.length === 0 && data.demoted.length === 0) {
+                diffsEl.innerHTML = `<div class="text-on-surface-variant italic">No threshold boundary crossings found.</div>`;
+            }
+            
+        } catch (e) {
+            console.error(e);
+            alert("Error running replay.");
+        } finally {
+            btn.innerHTML = origText;
+            btn.disabled = false;
+        }
+    }
+
     async function fetchReviewQueue() {
+        try {
+            const resultRes = await fetch('/reconcile/latest/results');
+            const resultData = await resultRes.json();
+            currentRunId = resultData.run_id;
+        } catch (e) {
+            console.error("Could not fetch latest run id");
+        }
+        
         try {
             const response = await fetch('/review-queue');
             const data = await response.json();
@@ -318,9 +502,138 @@ Support
                 document.querySelectorAll('.font-code-sm.text-code-sm.text-primary.mb-1')[2].innerText = item.source_record.source_event_id;
                 
                 document.querySelectorAll('.font-body-md.text-sm.text-error')[0].innerText = `${item.primary_reason}: ${item.control_result}. Halt commit.`;
+
+                const staleEl = document.getElementById('stale-indicator');
+                staleEl.classList.remove('hidden');
+                if (item.is_stale) {
+                    staleEl.className = "font-code-sm text-code-sm bg-error-container/20 text-error px-2 py-1 rounded inner-border";
+                    staleEl.innerText = `STALE: ${item.age_label}`;
+                } else {
+                    staleEl.className = "font-code-sm text-code-sm bg-surface-container px-2 py-1 rounded inner-border text-on-surface-variant";
+                    staleEl.innerText = `AGE: ${item.age_label}`;
+                }
+
+                // Render Journal Recommendation
+                if (item.proposed_journal) {
+                    document.getElementById('journal-approval-req').innerText = item.proposed_journal.approval_requirement;
+                    document.getElementById('journal-reason').innerText = item.proposed_journal.reason;
+                    document.getElementById('journal-evidence').innerText = `EVIDENCE: ${item.proposed_journal.supporting_evidence}`;
+                    
+                    const tbody = document.getElementById('journal-lines');
+                    tbody.innerHTML = '';
+                    let hasManualWarn = false;
+                    
+                    item.proposed_journal.lines.forEach(line => {
+                        if (line.account === 'MANUAL ACCOUNT SELECTION REQUIRED') {
+                            hasManualWarn = true;
+                        }
+                        const tr = document.createElement('tr');
+                        tr.className = "border-b border-outline-variant/50 last:border-0";
+                        tr.innerHTML = `
+                            <td class="py-1.5 px-3 text-on-surface ${line.type === 'CREDIT' ? 'pl-6' : ''}">${line.type}</td>
+                            <td class="py-1.5 px-3 ${line.account === 'MANUAL ACCOUNT SELECTION REQUIRED' ? 'text-error font-bold' : 'text-on-surface'}">${line.account}</td>
+                            <td class="py-1.5 px-3 text-right text-on-surface">${(line.amount_minor_units / 100).toLocaleString(undefined, {minimumFractionDigits: 2})} ${line.currency}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    
+                    if (hasManualWarn) {
+                        document.getElementById('journal-manual-warn').innerText = 'WARNING: NO DETERMINISTIC MAPPING';
+                    } else {
+                        document.getElementById('journal-manual-warn').innerText = '';
+                    }
+                }
+
+                // Fetch Audit Trail
+                const auditRes = await fetch(`/audit-trail/${item.source_record.source_event_id}`);
+                const auditData = await auditRes.json();
+                
+                const chainStatusEl = document.getElementById('chain-status');
+                chainStatusEl.classList.remove('hidden');
+                
+                if (auditData.chain_verified) {
+                    chainStatusEl.innerHTML = `
+                        <div class="flex items-center gap-1 text-primary-fixed bg-primary-fixed/10 px-2 py-1 rounded text-[10px]">
+                            <span class="material-symbols-outlined text-[12px]">verified</span>
+                            <span>AUDIT CHAIN VERIFIED • SHA-256</span>
+                        </div>
+                    `;
+                } else {
+                    chainStatusEl.innerHTML = `
+                        <div class="flex items-center gap-1 text-error bg-error/10 px-2 py-1 rounded text-[10px] pulse-error">
+                            <span class="material-symbols-outlined text-[12px]">warning</span>
+                            <span>CHAIN BROKEN • IDX: ${auditData.verification.first_broken_index} (${auditData.verification.failure_reason})</span>
+                        </div>
+                    `;
+                }
             }
         } catch (error) {
             console.error('Failed to fetch review queue:', error);
+        }
+        
+        let currentEntityId = null;
+        
+        async function askQA(presetQuestion = null) {
+            const inputEl = document.getElementById('qa-input');
+            const q = presetQuestion || inputEl.value;
+            if (!q) return;
+            if (!presetQuestion) inputEl.value = '';
+            
+            document.getElementById('qa-response-area').classList.remove('hidden');
+            document.getElementById('qa-loading').classList.remove('hidden');
+            document.getElementById('qa-answer-box').classList.add('hidden');
+            
+            try {
+                // Determine context
+                let entityId = null;
+                const srcIdEl = document.querySelectorAll('.font-code-sm.text-code-sm.text-primary.mb-1')[2];
+                if (srcIdEl && srcIdEl.innerText && srcIdEl.innerText.length > 5) {
+                    entityId = srcIdEl.innerText;
+                }
+                
+                const res = await fetch('/qa', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ question: q, entity_id: entityId })
+                });
+                const data = await res.json();
+                
+                document.getElementById('qa-loading').classList.add('hidden');
+                document.getElementById('qa-answer-box').classList.remove('hidden');
+                
+                document.getElementById('qa-answer-text').innerText = data.answer;
+                
+                const factsEl = document.getElementById('qa-facts');
+                factsEl.innerHTML = '';
+                data.facts.forEach(f => {
+                    factsEl.innerHTML += `<div><span class="font-bold">${f.label}:</span> ${f.value}</div>`;
+                });
+                if (data.facts.length === 0) {
+                    factsEl.innerHTML = `<div>No facts retrieved.</div>`;
+                }
+                
+                const sourcesEl = document.getElementById('qa-sources');
+                if (data.sources.length > 0) {
+                    sourcesEl.innerText = `SOURCES: ${data.sources.map(s => s.id).join(', ')}`;
+                } else {
+                    sourcesEl.innerText = '';
+                }
+                
+                const badgeEl = document.getElementById('qa-grounding-badge');
+                badgeEl.innerText = data.grounding;
+                if (data.grounding === 'GROUNDED') {
+                    badgeEl.className = 'font-code-sm text-[9px] px-1.5 py-0.5 rounded bg-primary-container text-on-primary-fixed';
+                } else if (data.grounding === 'INSUFFICIENT_DATA') {
+                    badgeEl.className = 'font-code-sm text-[9px] px-1.5 py-0.5 rounded bg-surface-variant text-on-surface-variant';
+                } else {
+                    badgeEl.className = 'font-code-sm text-[9px] px-1.5 py-0.5 rounded bg-error-container/50 text-error';
+                }
+                
+            } catch (e) {
+                console.error(e);
+                document.getElementById('qa-loading').classList.add('hidden');
+                document.getElementById('qa-answer-text').innerText = "An error occurred connecting to the backend.";
+            }
         }
     }
     fetchReviewQueue();

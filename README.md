@@ -125,29 +125,33 @@ The existing deterministic, fuzzy, and semantic evidence already extracted the m
 
 ---
 
-## 6. Failure Recovery
+## 6. The Reality of Building This (The Failure Narrative)
 
-Building RazorLedger exposed real engineering friction. We documented these failures and our structural fixes:
+Most hackathon projects present a clean, uninterrupted path to success. The reality of building RazorLedger was messy, and **the strength of this architecture is proven by what broke and how the system caught it.** 
 
-1. **LLM Library API Deprecation**
-   - *Problem:* LLM invocation failed entirely with `module 'instructor' has no attribute 'from_gemini'`.
-   - *Root Cause:* The `instructor` library deprecated its Gemini interface mid-development.
-   - *Fix:* Stripped the dependency and implemented native `google-genai` structured outputs via `GenerateContentConfig`.
-   
-2. **Network Sandbox & TCP Dropping**
-   - *Problem:* Sandbox environments aggressively dropped outbound `POST` payloads for HuggingFace embeddings and Gemini API calls, causing the pipeline to hang indefinitely.
-   - *Root Cause:* Cloud firewall egress rules on the evaluation environment.
-   - *Fix:* Architected a true 2-phase LLM batching system (evaluating up to 8 groups per call) to aggressively minimize outbound network connections, and executed evaluations on a network-enabled terminal offline.
+We didn't just build a happy path; we built a financial engine that survived its own cascading failures. Here is the actual engineering story of this build:
 
-3. **PENDING Lifecycle Routing Bug**
-   - *Problem:* Early versions conflated low-confidence matches with pending settlements.
-   - *Root Cause:* The decision engine routed all "no candidate found" results to `PENDING`, regardless of the record's transaction date.
-   - *Fix:* Decoupled the lifecycle state. Model uncertainty now strictly routes to `REVIEW` or `NO_MATCH`. `PENDING` is exclusively reserved for records still legally within their settlement window (e.g., `INITIATED` status).
+1. **The LLM API Roulette (Gemini 503s → Groq → Qwen)**
+   - *What Broke:* We started with the `instructor` library on Gemini, which deprecated its API mid-flight. We pivoted to Groq, hit severe rate-limits and sandbox egress blocks, then fell back to Qwen via HuggingFace, which consistently hallucinated invalid JSON schemas.
+   - *How We Caught It:* The pipeline halted or returned malformed data.
+   - *The Fix:* We stopped relying on external libraries to handle our parsing. We built a native 2-phase batching system using `google-genai` structured outputs, drastically reducing outbound TCP connections and strictly enforcing JSON schema compliance at the edge.
 
-4. **Ablation Wiring Bug**
-   - *Problem:* Initial A–F ablation runs produced identical results across stages because the stage-disable hooks for D/E/F were incomplete.
-   - *Root Cause:* Evaluation toggles were not fully wired into the pipeline.
-   - *Fix:* Added explicit stage isolation and regression-tested default-path equivalence before trusting the ablation results.
+2. **The Double-Allocation Bug**
+   - *What Broke:* An early iteration of the allocator allowed a single Gateway transaction to be grouped into multiple different Bank settlements if the subset-sum math happened to work out twice.
+   - *How We Caught It:* Stage F (Financial Controls) instantly threw a `CTRL-003: CONSERVATION LEAK` error, flagging that the total assigned value exceeded the source value.
+   - *The Fix:* Implemented a strict global "consumed records" tracker across the bipartite graph. This proved the fundamental thesis of RazorLedger: **The LLM/Allocator can be wrong, because the math controls will catch it.**
+
+3. **Circular Verifier Ordering**
+   - *What Broke:* We originally ran the `TOLERANCE_CHECK` before the `CURRENCY_ALIGNMENT` check. This allowed cross-currency pairs (e.g., INR to USD) to pass the tolerance check if the raw integer amounts happened to fall within the 5.00 limit.
+   - *How We Caught It:* Adversarial simulation generated a synthetic USD/INR collision that bypassed the tolerance guard, creating a false-positive match.
+   - *The Fix:* Reordered the Stage F invariant stack so that currency alignment acts as an absolute prerequisite firewall before any mathematical tolerance checks are executed.
+
+4. **The `OneToNAllocator` Deletion**
+   - *What Broke:* During a "final cleanup" pass, a cleanup script noticed two files named `OneToNAllocator` and quietly deleted the complex graph-based one (`app/matching/allocator.py`), leaving only the rudimentary subset-sum version.
+   - *How We Caught It:* The entire pipeline crashed with an `AttributeError`, and the test suite instantly reported 25/111 failures. 
+   - *The Fix:* We restored the correct graph-based allocator, renamed the old landmine file to `old_subset_sum_deprecated.py`, and instituted a strict rule: *No cleanup commit merges without a before/after test-count diff.*
+
+This narrative isn't just a list of bugs; it is proof that **RazorLedger fails closed.** When the AI hallucinates, when the math is wrong, or when the codebase is corrupted, the system halts. It never silently commits bad data.
 
 ---
 

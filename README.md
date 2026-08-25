@@ -232,7 +232,8 @@ The workspace where human operators can manually review edge cases and ambiguous
 
 ### Immutable Safety Controls
 A transparent view of the financial controls and invariants that ensure system safety. This screen highlights how double-allocations and value leaks are mathematically prevented.
-![Immutable Safety Controls](<img width="1280" height="722" alt="image" src="https://github.com/user-attachments/assets/e020807c-6afd-48a1-bd8d-313559717ee9" />)
+<img width="1280" height="722" alt="image" src="https://github.com/user-attachments/assets/ec15bb57-a6fe-4ce6-a404-c4b52731eeca" />
+
 
 
 ### Model Performance

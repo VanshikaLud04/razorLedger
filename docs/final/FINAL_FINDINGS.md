@@ -24,7 +24,7 @@ The RazorLedger project evolved through a rigorous empirical process:
 **6. Production Lock:** We locked the architecture. 
 
 ## Final Results
-- **Automation Increase:** 15.1% -> 71.6% on DEV (75.3% on FROZEN_UNSEEN).
+- **Automation Increase:** 15.1% -> 76.2% on DEV (79.5% on FROZEN_UNSEEN).
 - **Safety:** 100% Precision / 0.0% False Auto-Match.
 - **AI Contribution:** 0%.
 

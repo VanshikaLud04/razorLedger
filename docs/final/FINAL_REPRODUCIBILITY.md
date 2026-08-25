@@ -47,7 +47,7 @@ Generates `FINAL_ABLATION.csv` in `reports/final/`.
 PYTHONPATH=. pytest -v
 ```
 **Expected Output:**
-126 tests passed. No environment-only failures. No warnings.
+102 tests passed. No environment-only failures. No warnings.
 
 ## Configuration Details
 The final outputs are strictly generated using `FINAL_CONFIGURATION.json`. No parameters (such as `auto_match_threshold=0.80`) should be modified. The pipeline is locked.

@@ -4,7 +4,9 @@ import uuid
 import asyncio
 import csv
 from pathlib import Path
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.get("/api/final_metrics")
@@ -65,7 +67,7 @@ async def run_pipeline_background(run_id: str, partition: str):
         _RUNS[run_id]["metrics"] = metrics
         _RUNS[run_id]["status"] = "COMPLETE"
     except Exception as e:
-        print(f"Pipeline error: {e}")
+        logger.exception(f"Pipeline run {run_id} failed for partition {partition}: {e}")
         _RUNS[run_id]["status"] = "FAILED"
 
 @router.get("/reconcile/latest/results", response_model=RunScorecard)

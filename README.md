@@ -215,12 +215,14 @@ Here is a quick overview of the key screens in the RazorLedger UI:
 
 ### Command Center (Dashboard)
 The central hub for monitoring reconciliation runs, viewing high-level metrics, and navigating to different modules.
-![Command Center](<img width="1469" height="830" alt="image" src="https://github.com/user-attachments/assets/370da8e1-2437-42f3-a7aa-525c09d7329e" />
+![Command Center](<img width="1280" height="727" alt="image" src="https://github.com/user-attachments/assets/ff0e3979-240f-48d5-95f5-a671f6d1c4e7" />
+
 )
 
 ### Reconciliation Run Analysis
 A detailed view of a specific reconciliation run, showing the breakdown of records processed, safe automation rates, and overall progress.
-![Reconciliation Run Analysis](frontend/reconciliation_run_analysis/screen.png)
+![Reconciliation Run Analysis](<img width="1280" height="522" alt="image" src="https://github.com/user-attachments/assets/11ffe4b2-5526-42c8-806e-1b628e7ed3da" />
+)
 
 ### Forensic Review Workspace
 The workspace where human operators can manually review edge cases and ambiguous matches that the automated system routed to `REVIEW` or `PENDING`.
@@ -230,10 +232,20 @@ The workspace where human operators can manually review edge cases and ambiguous
 
 ### Immutable Safety Controls
 A transparent view of the financial controls and invariants that ensure system safety. This screen highlights how double-allocations and value leaks are mathematically prevented.
-![Immutable Safety Controls](<img width="1470" height="828" alt="image" src="https://github.com/user-attachments/assets/3a0b9357-0d30-4be6-ab86-16c7f8369bef" />
-)
+![Immutable Safety Controls](<img width="1280" height="722" alt="image" src="https://github.com/user-attachments/assets/e020807c-6afd-48a1-bd8d-313559717ee9" />)
+
 
 ### Model Performance
 An analytics screen dedicated to visualizing the performance of the matching pipeline, including precision, false auto-match rates, and evidence contribution.
-![Model Performance](<img width="1468" height="834" alt="image" src="https://github.com/user-attachments/assets/09a03b91-fe04-4b54-9bbc-e2a72cfe3966" />
+![Model Performance](<img width="1280" height="715" alt="image" src="https://github.com/user-attachments/assets/2cca8390-2838-4d76-add4-f44903b6b680" />
+
 )
+### Allocation Visual
+A focused view of legitimate one-to-many settlements, showing how a single $45,000 bank settlement is safely allocated across three records while enforcing value conservation, currency consistency, cardinality, and duplicate prevention.
+![Allocation Visual](<img width="1280" height="634" alt="image" src="https://github.com/user-attachments/assets/a1354522-00c1-4da7-89b7-12d7be033080" />
+
+)
+
+
+
+

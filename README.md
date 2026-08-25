@@ -215,7 +215,8 @@ Here is a quick overview of the key screens in the RazorLedger UI:
 
 ### Command Center (Dashboard)
 The central hub for monitoring reconciliation runs, viewing high-level metrics, and navigating to different modules.
-![Command Center](frontend/command_center/screen.png)
+![Command Center](<img width="1469" height="830" alt="image" src="https://github.com/user-attachments/assets/370da8e1-2437-42f3-a7aa-525c09d7329e" />
+)
 
 ### Reconciliation Run Analysis
 A detailed view of a specific reconciliation run, showing the breakdown of records processed, safe automation rates, and overall progress.
@@ -223,12 +224,15 @@ A detailed view of a specific reconciliation run, showing the breakdown of recor
 
 ### Forensic Review Workspace
 The workspace where human operators can manually review edge cases and ambiguous matches that the automated system routed to `REVIEW` or `PENDING`.
-![Forensic Review Workspace](frontend/forensic_review_workspace/screen.png)
+![Forensic Review Workspace](<img width="1470" height="832" alt="image" src="https://github.com/user-attachments/assets/bc417c06-0311-447e-8fdf-5a768a47bf75" />
+)
 
 ### Immutable Safety Controls
 A transparent view of the financial controls and invariants that ensure system safety. This screen highlights how double-allocations and value leaks are mathematically prevented.
-![Immutable Safety Controls](frontend/immutable_safety_controls/screen.png)
+![Immutable Safety Controls](<img width="1470" height="828" alt="image" src="https://github.com/user-attachments/assets/3a0b9357-0d30-4be6-ab86-16c7f8369bef" />
+)
 
 ### Model Performance
 An analytics screen dedicated to visualizing the performance of the matching pipeline, including precision, false auto-match rates, and evidence contribution.
-![Model Performance](frontend/model_performance_updated_branding/screen.png)
+![Model Performance](<img width="1468" height="834" alt="image" src="https://github.com/user-attachments/assets/09a03b91-fe04-4b54-9bbc-e2a72cfe3966" />
+)

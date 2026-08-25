@@ -138,13 +138,13 @@ We didn't just build a happy path; we built a financial engine that survived its
 
 2. **The Double-Allocation Bug**
    - *What Broke:* An early iteration of the allocator allowed a single Gateway transaction to be grouped into multiple different Bank settlements if the subset-sum math happened to work out twice.
-   - *How We Caught It:* Stage F (Financial Controls) instantly threw a `CTRL-003: CONSERVATION LEAK` error, flagging that the total assigned value exceeded the source value.
+   - *How We Caught It:* Stage F (Financial Controls) instantly threw a `CTRL-001: check_ctrl001_no_double_allocation` error, flagging "Double allocation detected".
    - *The Fix:* Implemented a strict global "consumed records" tracker across the bipartite graph. This proved the fundamental thesis of RazorLedger: **The LLM/Allocator can be wrong, because the math controls will catch it.**
 
 3. **Circular Verifier Ordering**
-   - *What Broke:* We originally ran the `TOLERANCE_CHECK` before the `CURRENCY_ALIGNMENT` check. This allowed cross-currency pairs (e.g., INR to USD) to pass the tolerance check if the raw integer amounts happened to fall within the 5.00 limit.
-   - *How We Caught It:* Adversarial simulation generated a synthetic USD/INR collision that bypassed the tolerance guard, creating a false-positive match.
-   - *The Fix:* Reordered the Stage F invariant stack so that currency alignment acts as an absolute prerequisite firewall before any mathematical tolerance checks are executed.
+   - *What Broke:* The pipeline originally contained a logical catch-22: the decision engine required a "verifier PASS" state to proceed, but the verifier stage was architected to run *after* the decision engine.
+   - *How We Caught It:* Identified during a strict architecture design review of the control flow before it caused silent failure states.
+   - *The Fix:* Reordered the pipeline so that the Stage F invariant stack explicitly acts as an absolute prerequisite firewall before any MATCH decision can be finalized.
 
 4. **The `OneToNAllocator` Deletion**
    - *What Broke:* During a "final cleanup" pass, a cleanup script noticed two files named `OneToNAllocator` and quietly deleted the complex graph-based one (`app/matching/allocator.py`), leaving only the rudimentary subset-sum version.

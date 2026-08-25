@@ -224,7 +224,8 @@ A detailed view of a specific reconciliation run, showing the breakdown of recor
 
 ### Forensic Review Workspace
 The workspace where human operators can manually review edge cases and ambiguous matches that the automated system routed to `REVIEW` or `PENDING`.
-![Forensic Review Workspace](<img width="1470" height="832" alt="image" src="https://github.com/user-attachments/assets/bc417c06-0311-447e-8fdf-5a768a47bf75" />
+![Forensic Review Workspace](<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/26b817a7-fd0e-4336-b3c5-b005f9767b07" />
+
 )
 
 ### Immutable Safety Controls

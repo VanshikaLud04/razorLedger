@@ -1,5 +1,5 @@
 import pytest
-from app.allocation.one_to_n import OneToNAllocator
+from app.matching.allocator import OneToNAllocator
 
 def test_transitive_graph_trap():
     allocator = OneToNAllocator({'matching': {'auto_match_threshold': 0.80}})

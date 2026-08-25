@@ -10,10 +10,10 @@ The backend reconciliation engine has reached Absolute Freeze (Production Ready)
 
 ## 2. Canonical Final Metrics
 The exact numbers that should be reflected in the UI (or fetched from backend routes) are:
-- **DEV Partition:** 343 / 450 (76.2% Safe Automation)
-- **VALIDATION Partition:** 354 / 450 (78.6% Safe Automation)
-- **TEST_ADVERSARIAL Partition:** 342 / 450 (76.0% Safe Automation)
-- **FROZEN_UNSEEN Partition:** 358 / 450 (79.5% Safe Automation)
+- **DEV Partition:** 322 / 450 (71.6% Safe Automation)
+- **VALIDATION Partition:** 326 / 450 (72.4% Safe Automation)
+- **TEST_ADVERSARIAL Partition:** 318 / 450 (70.7% Safe Automation)
+- **FROZEN_UNSEEN Partition:** 339 / 450 (75.3% Safe Automation)
 - **Overall Precision:** 100%
 - **False Auto-Match Rate:** 0.0%
 

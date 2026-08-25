@@ -38,6 +38,6 @@ The final benchmark is fully reproducible via `scripts/run_final_benchmark.py`, 
 
 ## 4. Final Verdict
 
-The architecture has demonstrably increased Safe Automation from 15.1% to 76.2% on DEV (and up to 79.5% on FROZEN_UNSEEN) while mathematically guaranteeing 100% precision. The Financial Controls remained the absolute final authority in the pipeline.
+The architecture has demonstrably increased Safe Automation from 15.1% to 71.6% on DEV (and up to 75.3% on FROZEN_UNSEEN) while mathematically guaranteeing 100% precision. The Financial Controls remained the absolute final authority in the pipeline.
 
 **Status:** APPROVED FOR PRODUCTION

@@ -29,6 +29,7 @@ from app.matching.deterministic import DeterministicMatcher
 from app.matching.fuzzy import FuzzyMatcher
 from app.matching.evidence import EvidenceFeatureBuilder, compute_rarity_frequencies
 from app.matching.evidence_weighted import EvidenceWeightedScorer
+from app.matching.allocator import OneToNAllocator
 from app.controls.engine import FinancialControlEngine
 from app.matching.llm import LLMEvidenceGenerator
 from app.matching.semantic import SemanticFeatureBuilder

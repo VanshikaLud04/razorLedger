@@ -37,16 +37,16 @@ The following benchmarks were generated on the completely frozen system configur
 
 > [!IMPORTANT]
 > **Highlights on FROZEN_UNSEEN:**
-> * **79.5%** safe automation
+> * **75.3%** safe automation
 > * **100%** precision
 > * **0.0%** false auto-match
 
 | Partition | Total Records | MATCH | REVIEW | Safe Automation | Value Coverage | Precision | False Auto-Match |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **DEV** | 450 | 343 | 101 | **76.2%** | 77.8% | 1.00 | **0.0%** |
-| **VALIDATION** | 450 | 354 | 91 | **78.6%** | 76.6% | 1.00 | **0.0%** |
-| **ADVERSARIAL** | 450 | 342 | 102 | **76.0%** | 76.3% | 1.00 | **0.0%** |
-| **FROZEN UNSEEN** | 450 | 358 | 84 | **79.5%** | 78.9% | 1.00 | **0.0%** |
+| **DEV** | 450 | 322 | 122 | **71.6%** | 73.7% | 1.00 | **0.0%** |
+| **VALIDATION** | 450 | 326 | 119 | **72.4%** | 71.0% | 1.00 | **0.0%** |
+| **ADVERSARIAL** | 450 | 318 | 126 | **70.7%** | 71.5% | 1.00 | **0.0%** |
+| **FROZEN UNSEEN** | 450 | 339 | 103 | **75.3%** | 75.1% | 1.00 | **0.0%** |
 
 *Note: Upstream stages can produce substantially more provisional matches; Stage F independently rejects proposals that violate financial invariants. This deliberate reduction is a safety property, not a failure mode.*
 

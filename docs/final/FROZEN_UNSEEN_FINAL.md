@@ -12,8 +12,8 @@ The final integrated `ReconciliationPipeline` (Stages A-F) was evaluated exactly
 | Metric | Result |
 |---|---|
 | Total Source Records | 450 |
-| **MATCH (Safe Auto-Resolved)** | **358** |
-| REVIEW (Manual Exception) | 84 |
+| **MATCH (Safe Auto-Resolved)** | **339** |
+| REVIEW (Manual Exception) | 103 |
 | PENDING (Awaiting Counterparty) | 8 |
 | NO_MATCH | 0 |
 
@@ -23,10 +23,10 @@ The final integrated `ReconciliationPipeline` (Stages A-F) was evaluated exactly
 
 | Metric | Result |
 | :--- | :--- |
-| **Safe Automation Rate** | **79.5%** |
-| **Value Coverage** | **79.0%** |
+| **Safe Automation Rate** | **75.3%** |
+| **Value Coverage** | **75.1%** |
 | **Precision** | **100%** |
 | **False Auto-Match Rate** | **0.0%** |
 
 ## Conclusion
-The architecture has proven highly robust. It generalized identically to the FROZEN_UNSEEN dataset, exceeding the DEV benchmark (76.2% -> 79.5%) while maintaining the strict 0% false auto-match constraint. The performance improvement from the deterministic baseline (15.1%) is verified.
+The architecture has proven highly robust. It generalized identically to the FROZEN_UNSEEN dataset, exceeding the DEV benchmark (71.6% -> 75.3%) while maintaining the strict 0% false auto-match constraint. The performance improvement from the deterministic baseline (15.1%) is verified.

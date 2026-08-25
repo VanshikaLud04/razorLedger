@@ -206,3 +206,29 @@ From the Dashboard, you can seamlessly navigate through all 6 canonical screens 
 - Allocation Visual
 - Safety & Controls
 - Model Performance
+
+---
+
+## 11. UI Walkthrough
+
+Here is a quick overview of the key screens in the RazorLedger UI:
+
+### Command Center (Dashboard)
+The central hub for monitoring reconciliation runs, viewing high-level metrics, and navigating to different modules.
+![Command Center](frontend/command_center/screen.png)
+
+### Reconciliation Run Analysis
+A detailed view of a specific reconciliation run, showing the breakdown of records processed, safe automation rates, and overall progress.
+![Reconciliation Run Analysis](frontend/reconciliation_run_analysis/screen.png)
+
+### Forensic Review Workspace
+The workspace where human operators can manually review edge cases and ambiguous matches that the automated system routed to `REVIEW` or `PENDING`.
+![Forensic Review Workspace](frontend/forensic_review_workspace/screen.png)
+
+### Immutable Safety Controls
+A transparent view of the financial controls and invariants that ensure system safety. This screen highlights how double-allocations and value leaks are mathematically prevented.
+![Immutable Safety Controls](frontend/immutable_safety_controls/screen.png)
+
+### Model Performance
+An analytics screen dedicated to visualizing the performance of the matching pipeline, including precision, false auto-match rates, and evidence contribution.
+![Model Performance](frontend/model_performance_updated_branding/screen.png)

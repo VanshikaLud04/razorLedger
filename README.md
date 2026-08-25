@@ -162,7 +162,7 @@ Running the end-to-end evaluation script demonstrates:
 2. **Safe 1:N Allocation:** Groups multiple gateway payments against bulk bank settlements.
 3. **Why a case was NOT automated:** Clear audit trails indicating `CONFIDENCE_GAP_INSUFFICIENT` or `LIFECYCLE_PENDING_SETTLEMENT`.
 4. **Financial Control Rejection:** The critical Stage F step catching and rejecting value-leaking candidates.
-5. **Adversarial Simulation:** Testing against 30% synthetic data corruption and noise.
+5. **Adversarial Simulation:** An independently seeded adversarial evaluation partition generated with 30% synthetic corruption.
 6. **Final Benchmark:** The output of the strict Stage A-F scorecard.
 
 ---

@@ -221,14 +221,14 @@ The central hub for monitoring reconciliation runs, viewing high-level metrics, 
 
 ### Reconciliation Run Analysis
 A detailed view of a specific reconciliation run, showing the breakdown of records processed, safe automation rates, and overall progress.
-![Reconciliation Run Analysis](<img width="1280" height="522" alt="image" src="https://github.com/user-attachments/assets/11ffe4b2-5526-42c8-806e-1b628e7ed3da" />
-)
+<img width="1280" height="522" alt="image" src="https://github.com/user-attachments/assets/eaa2e320-4334-4b4f-bd13-03741df1eb20" />
+
 
 ### Forensic Review Workspace
 The workspace where human operators can manually review edge cases and ambiguous matches that the automated system routed to `REVIEW` or `PENDING`.
-![Forensic Review Workspace](<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/26b817a7-fd0e-4336-b3c5-b005f9767b07" />
+<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/26b817a7-fd0e-4336-b3c5-b005f9767b07" />
 
-)
+
 
 ### Immutable Safety Controls
 A transparent view of the financial controls and invariants that ensure system safety. This screen highlights how double-allocations and value leaks are mathematically prevented.
@@ -237,14 +237,14 @@ A transparent view of the financial controls and invariants that ensure system s
 
 ### Model Performance
 An analytics screen dedicated to visualizing the performance of the matching pipeline, including precision, false auto-match rates, and evidence contribution.
-![Model Performance](<img width="1280" height="715" alt="image" src="https://github.com/user-attachments/assets/2cca8390-2838-4d76-add4-f44903b6b680" />
+<img width="1280" height="715" alt="image" src="https://github.com/user-attachments/assets/2cca8390-2838-4d76-add4-f44903b6b680" />
 
-)
+
 ### Allocation Visual
 A focused view of legitimate one-to-many settlements, showing how a single $45,000 bank settlement is safely allocated across three records while enforcing value conservation, currency consistency, cardinality, and duplicate prevention.
-![Allocation Visual](<img width="1280" height="634" alt="image" src="https://github.com/user-attachments/assets/a1354522-00c1-4da7-89b7-12d7be033080" />
+<img width="1280" height="634" alt="image" src="https://github.com/user-attachments/assets/a1354522-00c1-4da7-89b7-12d7be033080" />
 
-)
+
 
 
 
